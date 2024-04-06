@@ -16,6 +16,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+# IDE directories
+.vscode/
+# Binaries directories
+bin/
+# Environment files
+*.env
 
 # Go workspace file
 go.work
