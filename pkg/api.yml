@@ -1,11 +1,28 @@
 openapi: 3.0.0
 info:
   title: Сервис баннеров
+  description: Взаимодействие с пользовательскими баннерами.
+  contact:
+    name: Nikita Denisenok
+    url: https://vk.com/ndenisenok
   version: 1.0.0
+tags:
+- name: user-banners
+  description: "действия с баннерами для пользователя"
+- name: admin-banners
+  description: "действия с баннерами, доступные админу"
+servers:
+- url: http://localhost:3000
 paths:
   /user_banner:
     get:
+      tags:
+        - user-banners
       summary: Получение баннера для пользователя
+      description: "Получение баннера для пользователя в виде чистого JSON, который находится по feature_id и tag_id. \
+      \ По умолчанию из базы возвращается самая последняя версия. \
+      \ При использовании флага use_last_revision данные баннера возвращаются из резидентной БД."
+      operationId: getBanner
       parameters:
         - in: query
           name: tag_id
@@ -32,19 +49,13 @@ paths:
           content:
             application/json:
               schema:
-                description: JSON-отображение баннера
-                type: object
-                additionalProperties: true
-                example: {"title": "some_title", "text": "some_text", "url": "some_url"}
+                $ref: '#/components/schemas/GetBannerResponse'
         '400':
           description: Некорректные данные
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
         '401':
           description: Пользователь не авторизован
         '403':
@@ -56,15 +67,17 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
       security:
       - UserToken: []
   /banner:
     get:
+      tags:
+        - admin-banners
       summary: Получение всех баннеров c фильтрацией по фиче и/или тегу 
+      description: "Получение данных о баннерах для админов c фильтрацией по фиче и/или тегу и возможностью ограничить количество баннеров. \
+      \ По умолчанию количество возвращаемых баннеров равняется 1000. Доступно только админам."
+      operationId: getBanners
       parameters:
         - in: query
           name: feature_id
@@ -96,37 +109,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    banner_id:
-                      type: integer
-                      description: Идентификатор баннера
-                    tag_ids:
-                      type: array
-                      description: Идентификаторы тэгов
-                      items:
-                        type: integer
-                    feature_id:
-                      type: integer
-                      description: Идентификатор фичи
-                    content:
-                      type: object
-                      description: Содержимое баннера
-                      additionalProperties: true
-                      example: {"title": "some_title", "text": "some_text", "url": "some_url"}
-                    is_active:
-                      type: boolean
-                      description: Флаг активности баннера
-                    created_at:
-                      type: string
-                      format: date-time
-                      description: Дата создания баннера
-                    updated_at:
-                      type: string
-                      format: date-time
-                      description: Дата обновления баннера
+                $ref: '#/components/schemas/GetBannersResponse'
         '401':
           description: Пользователь не авторизован
         '403':
@@ -136,57 +119,34 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
       security:
       - AdminToken: []
     post:
+      tags:
+        - admin-banners
       summary: Создание нового баннера
+      description: "Создание баннера происходит в транзакции с уровнем изоляции ReadCommitted. Доступно только админам."
+      operationId: createBanner
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                tag_ids:
-                  type: array
-                  description: Идентификаторы тэгов
-                  items:
-                    type: integer
-                feature_id:
-                  type: integer
-                  description: Идентификатор фичи
-                content:
-                  type: object
-                  description: Содержимое баннера
-                  additionalProperties: true
-                  example: {"title": "some_title", "text": "some_text", "url": "some_url"}
-                is_active:
-                  type: boolean
-                  description: Флаг активности баннера
+              $ref: '#/components/schemas/CreateBannerRequest'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  banner_id:
-                    type: integer
-                    description: Идентификатор созданного баннера
+                $ref: '#/components/schemas/CreateBannerResponse'
         '400':
           description: Некорректные данные
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
         '401':
           description: Пользователь не авторизован
         '403':
@@ -196,15 +156,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
       security:
       - AdminToken: []
   /banner/{id}:
     patch:
+      tags:
+        - admin-banners
       summary: Обновление содержимого баннера
+      description: "Обновление баннера, поля тела запроса опциональны. При обновлении создается новая версия и изменяются прежние. Доступно только админам."
+      operationId: setBanner
       parameters:
         - in: path
           name: id
@@ -217,28 +178,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                tag_ids:
-                  nullable: true
-                  type: array
-                  description: Идентификаторы тэгов
-                  items:
-                    type: integer
-                feature_id:
-                  nullable: true
-                  type: integer
-                  description: Идентификатор фичи
-                content:
-                  nullable: true
-                  type: object
-                  description: Содержимое баннера
-                  additionalProperties: true
-                  example: {"title": "some_title", "text": "some_text", "url": "some_url"}
-                is_active:
-                  nullable: true
-                  type: boolean
-                  description: Флаг активности баннера
+              $ref: '#/components/schemas/SetBannerRequest'
       responses:
         '200':
           description: OK
@@ -247,10 +187,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
         '401':
           description: Пользователь не авторизован
         '403':
@@ -262,14 +199,15 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
       security:
       - AdminToken: []
     delete:
+      tags:
+        - admin-banners
       summary: Удаление баннера по идентификатору
+      description: "Удаление баннера по его идентификатору. Доступно только админам."
+      operationId: deleteBanner
       parameters:
         - in: path
           name: id
@@ -285,10 +223,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
         '401':
           description: Пользователь не авторизован
         '403':
@@ -300,13 +235,100 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
       security:
       - AdminToken: []
 components:  
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+    CreateBannerRequest:
+      type: object
+      properties:
+        tag_ids:
+          type: array
+          description: Идентификаторы тэгов
+          items:
+            type: integer
+        feature_id:
+          type: integer
+          description: Идентификатор фичи
+        content:
+          type: object
+          description: Содержимое баннера
+          additionalProperties: true
+          example: {"title": "some_title", "text": "some_text", "url": "some_url"}
+        is_active:
+          type: boolean
+          description: Флаг активности баннера
+    CreateBannerResponse:
+      type: object
+      properties:
+        banner_id:
+          type: integer
+          description: Идентификатор созданного баннера
+    GetBannerResponse:
+      type: object
+      additionalProperties: true
+      example: {"title": "some_title", "text": "some_text", "url": "some_url"}
+    GetBannersResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          banner_id:
+            type: integer
+            description: Идентификатор баннера
+          tag_ids:
+            type: array
+            description: Идентификаторы тэгов
+            items:
+              type: integer
+          feature_id:
+            type: integer
+            description: Идентификатор фичи
+          content:
+            type: object
+            description: Содержимое баннера
+            additionalProperties: true
+            example: {"title": "some_title", "text": "some_text", "url": "some_url"}
+          is_active:
+            type: boolean
+            description: Флаг активности баннера
+          created_at:
+            type: string
+            format: date-time
+            description: Дата создания баннера
+          updated_at:
+            type: string
+            format: date-time
+            description: Дата обновления баннера
+    SetBannerRequest:
+            type: object
+            properties:
+              tag_ids:
+                nullable: true
+                type: array
+                description: Идентификаторы тэгов
+                items:
+                  type: integer
+              feature_id:
+                nullable: true
+                type: integer
+                description: Идентификатор фичи
+              content:
+                nullable: true
+                type: object
+                description: Содержимое баннера
+                additionalProperties: true
+                example: {"title": "some_title", "text": "some_text", "url": "some_url"}
+              is_active:
+                nullable: true
+                type: boolean
+                description: Флаг активности баннера
   securitySchemes:
     UserToken:
       type: apiKey

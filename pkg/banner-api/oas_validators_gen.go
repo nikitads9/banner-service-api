@@ -8,15 +8,15 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s BannerGetOKApplicationJSON) Validate() error {
-	alias := ([]BannerGetOKItem)(s)
+func (s GetBannersResponse) Validate() error {
+	alias := ([]GetBannersResponseItem)(s)
 	if alias == nil {
 		return errors.New("nil is invalid value")
 	}
 	return nil
 }
 
-func (s *BannerIDPatchReq) Validate() error {
+func (s *SetBannerRequest) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}

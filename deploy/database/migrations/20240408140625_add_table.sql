@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 create table features (
     id bigserial primary key,
     name varchar(100) not null
@@ -31,3 +33,11 @@ create table banners (
                 on delete cascade
                 on update cascade
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+drop table features;
+drop table tags;
+drop table banners;
+-- +goose StatementEnd

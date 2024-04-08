@@ -72,9 +72,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleBannerGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleGetBannersRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handleBannerPostRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleCreateBannerRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET,POST")
 					}
@@ -99,11 +99,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						// Leaf node.
 						switch r.Method {
 						case "DELETE":
-							s.handleBannerIDDeleteRequest([1]string{
+							s.handleDeleteBannerRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						case "PATCH":
-							s.handleBannerIDPatchRequest([1]string{
+							s.handleSetBannerRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						default:
@@ -129,7 +129,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleUserBannerGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleGetBannerRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET")
 					}
@@ -244,17 +244,17 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = "BannerGet"
+						r.name = "GetBanners"
 						r.summary = "Получение всех баннеров c фильтрацией по фиче и/или тегу"
-						r.operationID = ""
+						r.operationID = "getBanners"
 						r.pathPattern = "/banner"
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
-						r.name = "BannerPost"
+						r.name = "CreateBanner"
 						r.summary = "Создание нового баннера"
-						r.operationID = ""
+						r.operationID = "createBanner"
 						r.pathPattern = "/banner"
 						r.args = args
 						r.count = 0
@@ -280,19 +280,19 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						switch method {
 						case "DELETE":
-							// Leaf: BannerIDDelete
-							r.name = "BannerIDDelete"
+							// Leaf: DeleteBanner
+							r.name = "DeleteBanner"
 							r.summary = "Удаление баннера по идентификатору"
-							r.operationID = ""
+							r.operationID = "deleteBanner"
 							r.pathPattern = "/banner/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
 						case "PATCH":
-							// Leaf: BannerIDPatch
-							r.name = "BannerIDPatch"
+							// Leaf: SetBanner
+							r.name = "SetBanner"
 							r.summary = "Обновление содержимого баннера"
-							r.operationID = ""
+							r.operationID = "setBanner"
 							r.pathPattern = "/banner/{id}"
 							r.args = args
 							r.count = 1
@@ -317,10 +317,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: UserBannerGet
-						r.name = "UserBannerGet"
+						// Leaf: GetBanner
+						r.name = "GetBanner"
 						r.summary = "Получение баннера для пользователя"
-						r.operationID = ""
+						r.operationID = "getBanner"
 						r.pathPattern = "/user_banner"
 						r.args = args
 						r.count = 0

@@ -1,0 +1,52 @@
+version: "3.8"
+
+networks:
+  app_net:
+    driver: bridge
+
+volumes:
+  postgres-volume:
+
+services:
+  # Postgresql database
+  db:
+    container_name: booking-storage
+    image: postgres:16-alpine3.19
+    environment:
+      - "POSTGRES_DB=${DB_NAME}"
+      - "POSTGRES_USER=${DB_USER}"
+      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
+      - "PGDATA=${PGDATA}"
+    volumes: 
+      - postgres-volume:/var/lib/postgresql/data
+    #  - ./deploy/database/init.sql:/docker-entrypoint-initdb.d/init.sql 
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    expose:
+    - "${DB_PORT}" 
+    command: -p ${DB_PORT}
+    networks:
+      - app_net
+
+  # Goose migrations manager
+  migrator:
+    container_name: migrator
+    build: 
+      context: ./deploy/migrations/
+      dockerfile: Dockerfile
+    restart: on-failure
+    image: nikitads9/booking-schedule:migrator
+    environment:
+      - 'GOOSE_DRIVER=postgres'
+      - 'DB_HOST=${DB_HOST}'
+      - 'DB_PORT=${DB_PORT}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_SSL=${DB_SSL}'
+    volumes:
+      - ./deploy/migrations/:/migrations/  
+    depends_on:
+      - db
+    networks:
+      - app_net

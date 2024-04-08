@@ -22,32 +22,198 @@ func (s *AdminToken) SetAPIKey(val string) {
 	s.APIKey = val
 }
 
-// BannerGetForbidden is response for BannerGet operation.
-type BannerGetForbidden struct{}
+type CreateBannerBadRequest Error
 
-func (*BannerGetForbidden) bannerGetRes() {}
+func (*CreateBannerBadRequest) createBannerRes() {}
 
-type BannerGetInternalServerError struct {
+// CreateBannerForbidden is response for CreateBanner operation.
+type CreateBannerForbidden struct{}
+
+func (*CreateBannerForbidden) createBannerRes() {}
+
+type CreateBannerInternalServerError Error
+
+func (*CreateBannerInternalServerError) createBannerRes() {}
+
+// Ref: #/components/schemas/CreateBannerRequest
+type CreateBannerRequest struct {
+	// Идентификаторы тэгов.
+	TagIds []int `json:"tag_ids"`
+	// Идентификатор фичи.
+	FeatureID OptInt `json:"feature_id"`
+	// Содержимое баннера.
+	Content OptCreateBannerRequestContent `json:"content"`
+	// Флаг активности баннера.
+	IsActive OptBool `json:"is_active"`
+}
+
+// GetTagIds returns the value of TagIds.
+func (s *CreateBannerRequest) GetTagIds() []int {
+	return s.TagIds
+}
+
+// GetFeatureID returns the value of FeatureID.
+func (s *CreateBannerRequest) GetFeatureID() OptInt {
+	return s.FeatureID
+}
+
+// GetContent returns the value of Content.
+func (s *CreateBannerRequest) GetContent() OptCreateBannerRequestContent {
+	return s.Content
+}
+
+// GetIsActive returns the value of IsActive.
+func (s *CreateBannerRequest) GetIsActive() OptBool {
+	return s.IsActive
+}
+
+// SetTagIds sets the value of TagIds.
+func (s *CreateBannerRequest) SetTagIds(val []int) {
+	s.TagIds = val
+}
+
+// SetFeatureID sets the value of FeatureID.
+func (s *CreateBannerRequest) SetFeatureID(val OptInt) {
+	s.FeatureID = val
+}
+
+// SetContent sets the value of Content.
+func (s *CreateBannerRequest) SetContent(val OptCreateBannerRequestContent) {
+	s.Content = val
+}
+
+// SetIsActive sets the value of IsActive.
+func (s *CreateBannerRequest) SetIsActive(val OptBool) {
+	s.IsActive = val
+}
+
+// Содержимое баннера.
+type CreateBannerRequestContent map[string]jx.Raw
+
+func (s *CreateBannerRequestContent) init() CreateBannerRequestContent {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
+
+// Ref: #/components/schemas/CreateBannerResponse
+type CreateBannerResponse struct {
+	// Идентификатор созданного баннера.
+	BannerID OptInt `json:"banner_id"`
+}
+
+// GetBannerID returns the value of BannerID.
+func (s *CreateBannerResponse) GetBannerID() OptInt {
+	return s.BannerID
+}
+
+// SetBannerID sets the value of BannerID.
+func (s *CreateBannerResponse) SetBannerID(val OptInt) {
+	s.BannerID = val
+}
+
+func (*CreateBannerResponse) createBannerRes() {}
+
+// CreateBannerUnauthorized is response for CreateBanner operation.
+type CreateBannerUnauthorized struct{}
+
+func (*CreateBannerUnauthorized) createBannerRes() {}
+
+type DeleteBannerBadRequest Error
+
+func (*DeleteBannerBadRequest) deleteBannerRes() {}
+
+// DeleteBannerForbidden is response for DeleteBanner operation.
+type DeleteBannerForbidden struct{}
+
+func (*DeleteBannerForbidden) deleteBannerRes() {}
+
+type DeleteBannerInternalServerError Error
+
+func (*DeleteBannerInternalServerError) deleteBannerRes() {}
+
+// DeleteBannerNoContent is response for DeleteBanner operation.
+type DeleteBannerNoContent struct{}
+
+func (*DeleteBannerNoContent) deleteBannerRes() {}
+
+// DeleteBannerNotFound is response for DeleteBanner operation.
+type DeleteBannerNotFound struct{}
+
+func (*DeleteBannerNotFound) deleteBannerRes() {}
+
+// DeleteBannerUnauthorized is response for DeleteBanner operation.
+type DeleteBannerUnauthorized struct{}
+
+func (*DeleteBannerUnauthorized) deleteBannerRes() {}
+
+// Ref: #/components/schemas/Error
+type Error struct {
 	Error OptString `json:"error"`
 }
 
 // GetError returns the value of Error.
-func (s *BannerGetInternalServerError) GetError() OptString {
+func (s *Error) GetError() OptString {
 	return s.Error
 }
 
 // SetError sets the value of Error.
-func (s *BannerGetInternalServerError) SetError(val OptString) {
+func (s *Error) SetError(val OptString) {
 	s.Error = val
 }
 
-func (*BannerGetInternalServerError) bannerGetRes() {}
+func (*Error) getBannersRes() {}
 
-type BannerGetOKApplicationJSON []BannerGetOKItem
+type GetBannerBadRequest Error
 
-func (*BannerGetOKApplicationJSON) bannerGetRes() {}
+func (*GetBannerBadRequest) getBannerRes() {}
 
-type BannerGetOKItem struct {
+// GetBannerForbidden is response for GetBanner operation.
+type GetBannerForbidden struct{}
+
+func (*GetBannerForbidden) getBannerRes() {}
+
+type GetBannerInternalServerError Error
+
+func (*GetBannerInternalServerError) getBannerRes() {}
+
+// GetBannerNotFound is response for GetBanner operation.
+type GetBannerNotFound struct{}
+
+func (*GetBannerNotFound) getBannerRes() {}
+
+// Ref: #/components/schemas/GetBannerResponse
+type GetBannerResponse map[string]jx.Raw
+
+func (s *GetBannerResponse) init() GetBannerResponse {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
+
+func (*GetBannerResponse) getBannerRes() {}
+
+// GetBannerUnauthorized is response for GetBanner operation.
+type GetBannerUnauthorized struct{}
+
+func (*GetBannerUnauthorized) getBannerRes() {}
+
+// GetBannersForbidden is response for GetBanners operation.
+type GetBannersForbidden struct{}
+
+func (*GetBannersForbidden) getBannersRes() {}
+
+type GetBannersResponse []GetBannersResponseItem
+
+func (*GetBannersResponse) getBannersRes() {}
+
+type GetBannersResponseItem struct {
 	// Идентификатор баннера.
 	BannerID OptInt `json:"banner_id"`
 	// Идентификаторы тэгов.
@@ -55,7 +221,7 @@ type BannerGetOKItem struct {
 	// Идентификатор фичи.
 	FeatureID OptInt `json:"feature_id"`
 	// Содержимое баннера.
-	Content OptBannerGetOKItemContent `json:"content"`
+	Content OptGetBannersResponseItemContent `json:"content"`
 	// Флаг активности баннера.
 	IsActive OptBool `json:"is_active"`
 	// Дата создания баннера.
@@ -65,79 +231,79 @@ type BannerGetOKItem struct {
 }
 
 // GetBannerID returns the value of BannerID.
-func (s *BannerGetOKItem) GetBannerID() OptInt {
+func (s *GetBannersResponseItem) GetBannerID() OptInt {
 	return s.BannerID
 }
 
 // GetTagIds returns the value of TagIds.
-func (s *BannerGetOKItem) GetTagIds() []int {
+func (s *GetBannersResponseItem) GetTagIds() []int {
 	return s.TagIds
 }
 
 // GetFeatureID returns the value of FeatureID.
-func (s *BannerGetOKItem) GetFeatureID() OptInt {
+func (s *GetBannersResponseItem) GetFeatureID() OptInt {
 	return s.FeatureID
 }
 
 // GetContent returns the value of Content.
-func (s *BannerGetOKItem) GetContent() OptBannerGetOKItemContent {
+func (s *GetBannersResponseItem) GetContent() OptGetBannersResponseItemContent {
 	return s.Content
 }
 
 // GetIsActive returns the value of IsActive.
-func (s *BannerGetOKItem) GetIsActive() OptBool {
+func (s *GetBannersResponseItem) GetIsActive() OptBool {
 	return s.IsActive
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *BannerGetOKItem) GetCreatedAt() OptDateTime {
+func (s *GetBannersResponseItem) GetCreatedAt() OptDateTime {
 	return s.CreatedAt
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
-func (s *BannerGetOKItem) GetUpdatedAt() OptDateTime {
+func (s *GetBannersResponseItem) GetUpdatedAt() OptDateTime {
 	return s.UpdatedAt
 }
 
 // SetBannerID sets the value of BannerID.
-func (s *BannerGetOKItem) SetBannerID(val OptInt) {
+func (s *GetBannersResponseItem) SetBannerID(val OptInt) {
 	s.BannerID = val
 }
 
 // SetTagIds sets the value of TagIds.
-func (s *BannerGetOKItem) SetTagIds(val []int) {
+func (s *GetBannersResponseItem) SetTagIds(val []int) {
 	s.TagIds = val
 }
 
 // SetFeatureID sets the value of FeatureID.
-func (s *BannerGetOKItem) SetFeatureID(val OptInt) {
+func (s *GetBannersResponseItem) SetFeatureID(val OptInt) {
 	s.FeatureID = val
 }
 
 // SetContent sets the value of Content.
-func (s *BannerGetOKItem) SetContent(val OptBannerGetOKItemContent) {
+func (s *GetBannersResponseItem) SetContent(val OptGetBannersResponseItemContent) {
 	s.Content = val
 }
 
 // SetIsActive sets the value of IsActive.
-func (s *BannerGetOKItem) SetIsActive(val OptBool) {
+func (s *GetBannersResponseItem) SetIsActive(val OptBool) {
 	s.IsActive = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *BannerGetOKItem) SetCreatedAt(val OptDateTime) {
+func (s *GetBannersResponseItem) SetCreatedAt(val OptDateTime) {
 	s.CreatedAt = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
-func (s *BannerGetOKItem) SetUpdatedAt(val OptDateTime) {
+func (s *GetBannersResponseItem) SetUpdatedAt(val OptDateTime) {
 	s.UpdatedAt = val
 }
 
 // Содержимое баннера.
-type BannerGetOKItemContent map[string]jx.Raw
+type GetBannersResponseItemContent map[string]jx.Raw
 
-func (s *BannerGetOKItemContent) init() BannerGetOKItemContent {
+func (s *GetBannersResponseItemContent) init() GetBannersResponseItemContent {
 	m := *s
 	if m == nil {
 		m = map[string]jx.Raw{}
@@ -146,391 +312,10 @@ func (s *BannerGetOKItemContent) init() BannerGetOKItemContent {
 	return m
 }
 
-// BannerGetUnauthorized is response for BannerGet operation.
-type BannerGetUnauthorized struct{}
+// GetBannersUnauthorized is response for GetBanners operation.
+type GetBannersUnauthorized struct{}
 
-func (*BannerGetUnauthorized) bannerGetRes() {}
-
-type BannerIDDeleteBadRequest struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerIDDeleteBadRequest) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerIDDeleteBadRequest) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerIDDeleteBadRequest) bannerIDDeleteRes() {}
-
-// BannerIDDeleteForbidden is response for BannerIDDelete operation.
-type BannerIDDeleteForbidden struct{}
-
-func (*BannerIDDeleteForbidden) bannerIDDeleteRes() {}
-
-type BannerIDDeleteInternalServerError struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerIDDeleteInternalServerError) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerIDDeleteInternalServerError) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerIDDeleteInternalServerError) bannerIDDeleteRes() {}
-
-// BannerIDDeleteNoContent is response for BannerIDDelete operation.
-type BannerIDDeleteNoContent struct{}
-
-func (*BannerIDDeleteNoContent) bannerIDDeleteRes() {}
-
-// BannerIDDeleteNotFound is response for BannerIDDelete operation.
-type BannerIDDeleteNotFound struct{}
-
-func (*BannerIDDeleteNotFound) bannerIDDeleteRes() {}
-
-// BannerIDDeleteUnauthorized is response for BannerIDDelete operation.
-type BannerIDDeleteUnauthorized struct{}
-
-func (*BannerIDDeleteUnauthorized) bannerIDDeleteRes() {}
-
-type BannerIDPatchBadRequest struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerIDPatchBadRequest) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerIDPatchBadRequest) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerIDPatchBadRequest) bannerIDPatchRes() {}
-
-// BannerIDPatchForbidden is response for BannerIDPatch operation.
-type BannerIDPatchForbidden struct{}
-
-func (*BannerIDPatchForbidden) bannerIDPatchRes() {}
-
-type BannerIDPatchInternalServerError struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerIDPatchInternalServerError) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerIDPatchInternalServerError) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerIDPatchInternalServerError) bannerIDPatchRes() {}
-
-// BannerIDPatchNotFound is response for BannerIDPatch operation.
-type BannerIDPatchNotFound struct{}
-
-func (*BannerIDPatchNotFound) bannerIDPatchRes() {}
-
-// BannerIDPatchOK is response for BannerIDPatch operation.
-type BannerIDPatchOK struct{}
-
-func (*BannerIDPatchOK) bannerIDPatchRes() {}
-
-type BannerIDPatchReq struct {
-	// Идентификаторы тэгов.
-	TagIds OptNilIntArray `json:"tag_ids"`
-	// Идентификатор фичи.
-	FeatureID OptNilInt `json:"feature_id"`
-	// Содержимое баннера.
-	Content OptNilBannerIDPatchReqContent `json:"content"`
-	// Флаг активности баннера.
-	IsActive OptNilBool `json:"is_active"`
-}
-
-// GetTagIds returns the value of TagIds.
-func (s *BannerIDPatchReq) GetTagIds() OptNilIntArray {
-	return s.TagIds
-}
-
-// GetFeatureID returns the value of FeatureID.
-func (s *BannerIDPatchReq) GetFeatureID() OptNilInt {
-	return s.FeatureID
-}
-
-// GetContent returns the value of Content.
-func (s *BannerIDPatchReq) GetContent() OptNilBannerIDPatchReqContent {
-	return s.Content
-}
-
-// GetIsActive returns the value of IsActive.
-func (s *BannerIDPatchReq) GetIsActive() OptNilBool {
-	return s.IsActive
-}
-
-// SetTagIds sets the value of TagIds.
-func (s *BannerIDPatchReq) SetTagIds(val OptNilIntArray) {
-	s.TagIds = val
-}
-
-// SetFeatureID sets the value of FeatureID.
-func (s *BannerIDPatchReq) SetFeatureID(val OptNilInt) {
-	s.FeatureID = val
-}
-
-// SetContent sets the value of Content.
-func (s *BannerIDPatchReq) SetContent(val OptNilBannerIDPatchReqContent) {
-	s.Content = val
-}
-
-// SetIsActive sets the value of IsActive.
-func (s *BannerIDPatchReq) SetIsActive(val OptNilBool) {
-	s.IsActive = val
-}
-
-// Содержимое баннера.
-type BannerIDPatchReqContent map[string]jx.Raw
-
-func (s *BannerIDPatchReqContent) init() BannerIDPatchReqContent {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
-}
-
-// BannerIDPatchUnauthorized is response for BannerIDPatch operation.
-type BannerIDPatchUnauthorized struct{}
-
-func (*BannerIDPatchUnauthorized) bannerIDPatchRes() {}
-
-type BannerPostBadRequest struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerPostBadRequest) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerPostBadRequest) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerPostBadRequest) bannerPostRes() {}
-
-type BannerPostCreated struct {
-	// Идентификатор созданного баннера.
-	BannerID OptInt `json:"banner_id"`
-}
-
-// GetBannerID returns the value of BannerID.
-func (s *BannerPostCreated) GetBannerID() OptInt {
-	return s.BannerID
-}
-
-// SetBannerID sets the value of BannerID.
-func (s *BannerPostCreated) SetBannerID(val OptInt) {
-	s.BannerID = val
-}
-
-func (*BannerPostCreated) bannerPostRes() {}
-
-// BannerPostForbidden is response for BannerPost operation.
-type BannerPostForbidden struct{}
-
-func (*BannerPostForbidden) bannerPostRes() {}
-
-type BannerPostInternalServerError struct {
-	Error OptString `json:"error"`
-}
-
-// GetError returns the value of Error.
-func (s *BannerPostInternalServerError) GetError() OptString {
-	return s.Error
-}
-
-// SetError sets the value of Error.
-func (s *BannerPostInternalServerError) SetError(val OptString) {
-	s.Error = val
-}
-
-func (*BannerPostInternalServerError) bannerPostRes() {}
-
-type BannerPostReq struct {
-	// Идентификаторы тэгов.
-	TagIds []int `json:"tag_ids"`
-	// Идентификатор фичи.
-	FeatureID OptInt `json:"feature_id"`
-	// Содержимое баннера.
-	Content OptBannerPostReqContent `json:"content"`
-	// Флаг активности баннера.
-	IsActive OptBool `json:"is_active"`
-}
-
-// GetTagIds returns the value of TagIds.
-func (s *BannerPostReq) GetTagIds() []int {
-	return s.TagIds
-}
-
-// GetFeatureID returns the value of FeatureID.
-func (s *BannerPostReq) GetFeatureID() OptInt {
-	return s.FeatureID
-}
-
-// GetContent returns the value of Content.
-func (s *BannerPostReq) GetContent() OptBannerPostReqContent {
-	return s.Content
-}
-
-// GetIsActive returns the value of IsActive.
-func (s *BannerPostReq) GetIsActive() OptBool {
-	return s.IsActive
-}
-
-// SetTagIds sets the value of TagIds.
-func (s *BannerPostReq) SetTagIds(val []int) {
-	s.TagIds = val
-}
-
-// SetFeatureID sets the value of FeatureID.
-func (s *BannerPostReq) SetFeatureID(val OptInt) {
-	s.FeatureID = val
-}
-
-// SetContent sets the value of Content.
-func (s *BannerPostReq) SetContent(val OptBannerPostReqContent) {
-	s.Content = val
-}
-
-// SetIsActive sets the value of IsActive.
-func (s *BannerPostReq) SetIsActive(val OptBool) {
-	s.IsActive = val
-}
-
-// Содержимое баннера.
-type BannerPostReqContent map[string]jx.Raw
-
-func (s *BannerPostReqContent) init() BannerPostReqContent {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
-}
-
-// BannerPostUnauthorized is response for BannerPost operation.
-type BannerPostUnauthorized struct{}
-
-func (*BannerPostUnauthorized) bannerPostRes() {}
-
-// NewOptBannerGetOKItemContent returns new OptBannerGetOKItemContent with value set to v.
-func NewOptBannerGetOKItemContent(v BannerGetOKItemContent) OptBannerGetOKItemContent {
-	return OptBannerGetOKItemContent{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptBannerGetOKItemContent is optional BannerGetOKItemContent.
-type OptBannerGetOKItemContent struct {
-	Value BannerGetOKItemContent
-	Set   bool
-}
-
-// IsSet returns true if OptBannerGetOKItemContent was set.
-func (o OptBannerGetOKItemContent) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptBannerGetOKItemContent) Reset() {
-	var v BannerGetOKItemContent
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptBannerGetOKItemContent) SetTo(v BannerGetOKItemContent) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptBannerGetOKItemContent) Get() (v BannerGetOKItemContent, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptBannerGetOKItemContent) Or(d BannerGetOKItemContent) BannerGetOKItemContent {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptBannerPostReqContent returns new OptBannerPostReqContent with value set to v.
-func NewOptBannerPostReqContent(v BannerPostReqContent) OptBannerPostReqContent {
-	return OptBannerPostReqContent{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptBannerPostReqContent is optional BannerPostReqContent.
-type OptBannerPostReqContent struct {
-	Value BannerPostReqContent
-	Set   bool
-}
-
-// IsSet returns true if OptBannerPostReqContent was set.
-func (o OptBannerPostReqContent) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptBannerPostReqContent) Reset() {
-	var v BannerPostReqContent
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptBannerPostReqContent) SetTo(v BannerPostReqContent) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptBannerPostReqContent) Get() (v BannerPostReqContent, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptBannerPostReqContent) Or(d BannerPostReqContent) BannerPostReqContent {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
+func (*GetBannersUnauthorized) getBannersRes() {}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
@@ -572,6 +357,52 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptCreateBannerRequestContent returns new OptCreateBannerRequestContent with value set to v.
+func NewOptCreateBannerRequestContent(v CreateBannerRequestContent) OptCreateBannerRequestContent {
+	return OptCreateBannerRequestContent{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptCreateBannerRequestContent is optional CreateBannerRequestContent.
+type OptCreateBannerRequestContent struct {
+	Value CreateBannerRequestContent
+	Set   bool
+}
+
+// IsSet returns true if OptCreateBannerRequestContent was set.
+func (o OptCreateBannerRequestContent) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptCreateBannerRequestContent) Reset() {
+	var v CreateBannerRequestContent
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptCreateBannerRequestContent) SetTo(v CreateBannerRequestContent) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptCreateBannerRequestContent) Get() (v CreateBannerRequestContent, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptCreateBannerRequestContent) Or(d CreateBannerRequestContent) CreateBannerRequestContent {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -624,6 +455,52 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptGetBannersResponseItemContent returns new OptGetBannersResponseItemContent with value set to v.
+func NewOptGetBannersResponseItemContent(v GetBannersResponseItemContent) OptGetBannersResponseItemContent {
+	return OptGetBannersResponseItemContent{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptGetBannersResponseItemContent is optional GetBannersResponseItemContent.
+type OptGetBannersResponseItemContent struct {
+	Value GetBannersResponseItemContent
+	Set   bool
+}
+
+// IsSet returns true if OptGetBannersResponseItemContent was set.
+func (o OptGetBannersResponseItemContent) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptGetBannersResponseItemContent) Reset() {
+	var v GetBannersResponseItemContent
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptGetBannersResponseItemContent) SetTo(v GetBannersResponseItemContent) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptGetBannersResponseItemContent) Get() (v GetBannersResponseItemContent, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptGetBannersResponseItemContent) Or(d GetBannersResponseItemContent) GetBannersResponseItemContent {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -664,69 +541,6 @@ func (o OptInt) Get() (v int, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt) Or(d int) int {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptNilBannerIDPatchReqContent returns new OptNilBannerIDPatchReqContent with value set to v.
-func NewOptNilBannerIDPatchReqContent(v BannerIDPatchReqContent) OptNilBannerIDPatchReqContent {
-	return OptNilBannerIDPatchReqContent{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilBannerIDPatchReqContent is optional nullable BannerIDPatchReqContent.
-type OptNilBannerIDPatchReqContent struct {
-	Value BannerIDPatchReqContent
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilBannerIDPatchReqContent was set.
-func (o OptNilBannerIDPatchReqContent) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilBannerIDPatchReqContent) Reset() {
-	var v BannerIDPatchReqContent
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilBannerIDPatchReqContent) SetTo(v BannerIDPatchReqContent) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsSet returns true if value is Null.
-func (o OptNilBannerIDPatchReqContent) IsNull() bool { return o.Null }
-
-// SetNull sets value to null.
-func (o *OptNilBannerIDPatchReqContent) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v BannerIDPatchReqContent
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilBannerIDPatchReqContent) Get() (v BannerIDPatchReqContent, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilBannerIDPatchReqContent) Or(d BannerIDPatchReqContent) BannerIDPatchReqContent {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -922,6 +736,69 @@ func (o OptNilIntArray) Or(d []int) []int {
 	return d
 }
 
+// NewOptNilSetBannerRequestContent returns new OptNilSetBannerRequestContent with value set to v.
+func NewOptNilSetBannerRequestContent(v SetBannerRequestContent) OptNilSetBannerRequestContent {
+	return OptNilSetBannerRequestContent{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilSetBannerRequestContent is optional nullable SetBannerRequestContent.
+type OptNilSetBannerRequestContent struct {
+	Value SetBannerRequestContent
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilSetBannerRequestContent was set.
+func (o OptNilSetBannerRequestContent) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilSetBannerRequestContent) Reset() {
+	var v SetBannerRequestContent
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilSetBannerRequestContent) SetTo(v SetBannerRequestContent) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsSet returns true if value is Null.
+func (o OptNilSetBannerRequestContent) IsNull() bool { return o.Null }
+
+// SetNull sets value to null.
+func (o *OptNilSetBannerRequestContent) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v SetBannerRequestContent
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilSetBannerRequestContent) Get() (v SetBannerRequestContent, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilSetBannerRequestContent) Or(d SetBannerRequestContent) SetBannerRequestContent {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -968,52 +845,85 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-type UserBannerGetBadRequest struct {
-	Error OptString `json:"error"`
+type SetBannerBadRequest Error
+
+func (*SetBannerBadRequest) setBannerRes() {}
+
+// SetBannerForbidden is response for SetBanner operation.
+type SetBannerForbidden struct{}
+
+func (*SetBannerForbidden) setBannerRes() {}
+
+type SetBannerInternalServerError Error
+
+func (*SetBannerInternalServerError) setBannerRes() {}
+
+// SetBannerNotFound is response for SetBanner operation.
+type SetBannerNotFound struct{}
+
+func (*SetBannerNotFound) setBannerRes() {}
+
+// SetBannerOK is response for SetBanner operation.
+type SetBannerOK struct{}
+
+func (*SetBannerOK) setBannerRes() {}
+
+// Ref: #/components/schemas/SetBannerRequest
+type SetBannerRequest struct {
+	// Идентификаторы тэгов.
+	TagIds OptNilIntArray `json:"tag_ids"`
+	// Идентификатор фичи.
+	FeatureID OptNilInt `json:"feature_id"`
+	// Содержимое баннера.
+	Content OptNilSetBannerRequestContent `json:"content"`
+	// Флаг активности баннера.
+	IsActive OptNilBool `json:"is_active"`
 }
 
-// GetError returns the value of Error.
-func (s *UserBannerGetBadRequest) GetError() OptString {
-	return s.Error
+// GetTagIds returns the value of TagIds.
+func (s *SetBannerRequest) GetTagIds() OptNilIntArray {
+	return s.TagIds
 }
 
-// SetError sets the value of Error.
-func (s *UserBannerGetBadRequest) SetError(val OptString) {
-	s.Error = val
+// GetFeatureID returns the value of FeatureID.
+func (s *SetBannerRequest) GetFeatureID() OptNilInt {
+	return s.FeatureID
 }
 
-func (*UserBannerGetBadRequest) userBannerGetRes() {}
-
-// UserBannerGetForbidden is response for UserBannerGet operation.
-type UserBannerGetForbidden struct{}
-
-func (*UserBannerGetForbidden) userBannerGetRes() {}
-
-type UserBannerGetInternalServerError struct {
-	Error OptString `json:"error"`
+// GetContent returns the value of Content.
+func (s *SetBannerRequest) GetContent() OptNilSetBannerRequestContent {
+	return s.Content
 }
 
-// GetError returns the value of Error.
-func (s *UserBannerGetInternalServerError) GetError() OptString {
-	return s.Error
+// GetIsActive returns the value of IsActive.
+func (s *SetBannerRequest) GetIsActive() OptNilBool {
+	return s.IsActive
 }
 
-// SetError sets the value of Error.
-func (s *UserBannerGetInternalServerError) SetError(val OptString) {
-	s.Error = val
+// SetTagIds sets the value of TagIds.
+func (s *SetBannerRequest) SetTagIds(val OptNilIntArray) {
+	s.TagIds = val
 }
 
-func (*UserBannerGetInternalServerError) userBannerGetRes() {}
+// SetFeatureID sets the value of FeatureID.
+func (s *SetBannerRequest) SetFeatureID(val OptNilInt) {
+	s.FeatureID = val
+}
 
-// UserBannerGetNotFound is response for UserBannerGet operation.
-type UserBannerGetNotFound struct{}
+// SetContent sets the value of Content.
+func (s *SetBannerRequest) SetContent(val OptNilSetBannerRequestContent) {
+	s.Content = val
+}
 
-func (*UserBannerGetNotFound) userBannerGetRes() {}
+// SetIsActive sets the value of IsActive.
+func (s *SetBannerRequest) SetIsActive(val OptNilBool) {
+	s.IsActive = val
+}
 
-// JSON-отображение баннера.
-type UserBannerGetOK map[string]jx.Raw
+// Содержимое баннера.
+type SetBannerRequestContent map[string]jx.Raw
 
-func (s *UserBannerGetOK) init() UserBannerGetOK {
+func (s *SetBannerRequestContent) init() SetBannerRequestContent {
 	m := *s
 	if m == nil {
 		m = map[string]jx.Raw{}
@@ -1022,12 +932,10 @@ func (s *UserBannerGetOK) init() UserBannerGetOK {
 	return m
 }
 
-func (*UserBannerGetOK) userBannerGetRes() {}
+// SetBannerUnauthorized is response for SetBanner operation.
+type SetBannerUnauthorized struct{}
 
-// UserBannerGetUnauthorized is response for UserBannerGet operation.
-type UserBannerGetUnauthorized struct{}
-
-func (*UserBannerGetUnauthorized) userBannerGetRes() {}
+func (*SetBannerUnauthorized) setBannerRes() {}
 
 type UserToken struct {
 	APIKey string

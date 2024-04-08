@@ -13,48 +13,48 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// BannerGet implements GET /banner operation.
+// CreateBanner implements createBanner operation.
+//
+// Создание нового баннера.
+//
+// POST /banner
+func (UnimplementedHandler) CreateBanner(ctx context.Context, req *CreateBannerRequest) (r CreateBannerRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteBanner implements deleteBanner operation.
+//
+// Удаление баннера по идентификатору.
+//
+// DELETE /banner/{id}
+func (UnimplementedHandler) DeleteBanner(ctx context.Context, params DeleteBannerParams) (r DeleteBannerRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetBanner implements getBanner operation.
+//
+// Получение баннера для пользователя.
+//
+// GET /user_banner
+func (UnimplementedHandler) GetBanner(ctx context.Context, params GetBannerParams) (r GetBannerRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetBanners implements getBanners operation.
 //
 // Получение всех баннеров c фильтрацией по фиче и/или
 // тегу.
 //
 // GET /banner
-func (UnimplementedHandler) BannerGet(ctx context.Context, params BannerGetParams) (r BannerGetRes, _ error) {
+func (UnimplementedHandler) GetBanners(ctx context.Context, params GetBannersParams) (r GetBannersRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// BannerIDDelete implements DELETE /banner/{id} operation.
-//
-// Удаление баннера по идентификатору.
-//
-// DELETE /banner/{id}
-func (UnimplementedHandler) BannerIDDelete(ctx context.Context, params BannerIDDeleteParams) (r BannerIDDeleteRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BannerIDPatch implements PATCH /banner/{id} operation.
+// SetBanner implements setBanner operation.
 //
 // Обновление содержимого баннера.
 //
 // PATCH /banner/{id}
-func (UnimplementedHandler) BannerIDPatch(ctx context.Context, req *BannerIDPatchReq, params BannerIDPatchParams) (r BannerIDPatchRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BannerPost implements POST /banner operation.
-//
-// Создание нового баннера.
-//
-// POST /banner
-func (UnimplementedHandler) BannerPost(ctx context.Context, req *BannerPostReq) (r BannerPostRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// UserBannerGet implements GET /user_banner operation.
-//
-// Получение баннера для пользователя.
-//
-// GET /user_banner
-func (UnimplementedHandler) UserBannerGet(ctx context.Context, params UserBannerGetParams) (r UserBannerGetRes, _ error) {
+func (UnimplementedHandler) SetBanner(ctx context.Context, req *SetBannerRequest, params SetBannerParams) (r SetBannerRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

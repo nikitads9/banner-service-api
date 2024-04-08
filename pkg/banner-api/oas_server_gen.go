@@ -8,37 +8,37 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// BannerGet implements GET /banner operation.
+	// CreateBanner implements createBanner operation.
+	//
+	// Создание нового баннера.
+	//
+	// POST /banner
+	CreateBanner(ctx context.Context, req *CreateBannerRequest) (CreateBannerRes, error)
+	// DeleteBanner implements deleteBanner operation.
+	//
+	// Удаление баннера по идентификатору.
+	//
+	// DELETE /banner/{id}
+	DeleteBanner(ctx context.Context, params DeleteBannerParams) (DeleteBannerRes, error)
+	// GetBanner implements getBanner operation.
+	//
+	// Получение баннера для пользователя.
+	//
+	// GET /user_banner
+	GetBanner(ctx context.Context, params GetBannerParams) (GetBannerRes, error)
+	// GetBanners implements getBanners operation.
 	//
 	// Получение всех баннеров c фильтрацией по фиче и/или
 	// тегу.
 	//
 	// GET /banner
-	BannerGet(ctx context.Context, params BannerGetParams) (BannerGetRes, error)
-	// BannerIDDelete implements DELETE /banner/{id} operation.
-	//
-	// Удаление баннера по идентификатору.
-	//
-	// DELETE /banner/{id}
-	BannerIDDelete(ctx context.Context, params BannerIDDeleteParams) (BannerIDDeleteRes, error)
-	// BannerIDPatch implements PATCH /banner/{id} operation.
+	GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error)
+	// SetBanner implements setBanner operation.
 	//
 	// Обновление содержимого баннера.
 	//
 	// PATCH /banner/{id}
-	BannerIDPatch(ctx context.Context, req *BannerIDPatchReq, params BannerIDPatchParams) (BannerIDPatchRes, error)
-	// BannerPost implements POST /banner operation.
-	//
-	// Создание нового баннера.
-	//
-	// POST /banner
-	BannerPost(ctx context.Context, req *BannerPostReq) (BannerPostRes, error)
-	// UserBannerGet implements GET /user_banner operation.
-	//
-	// Получение баннера для пользователя.
-	//
-	// GET /user_banner
-	UserBannerGet(ctx context.Context, params UserBannerGetParams) (UserBannerGetRes, error)
+	SetBanner(ctx context.Context, req *SetBannerRequest, params SetBannerParams) (SetBannerRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
