@@ -7,6 +7,7 @@ import (
 	"os"
 
 	bannerRepository "github.com/nikitads9/banner-service-api/internal/app/repository/banner"
+	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/postgres"
 	bannerService "github.com/nikitads9/banner-service-api/internal/app/service/banner"
 	"github.com/nikitads9/banner-service-api/internal/app/service/jwt"
 
@@ -32,8 +33,8 @@ type serviceProvider struct {
 
 	log *slog.Logger
 
-	bannerRepository bannerRepository.Repository
-	bannerService    *bannerService.Service
+	postgresRepository bannerRepository.Repository
+	bannerService      *bannerService.Service
 
 	jwtService jwt.Service
 }
@@ -81,18 +82,18 @@ func (s *serviceProvider) GetConfig() *config.BannerConfig {
 	return s.config
 }
 
-func (s *serviceProvider) GetBannerRepository(ctx context.Context) bannerRepository.Repository {
-	if s.bannerRepository == nil {
-		s.bannerRepository = bannerRepository.NewBannerRepository(s.GetDB(ctx), s.GetLogger())
-		return s.bannerRepository
+func (s *serviceProvider) GetPostgresRepository(ctx context.Context) bannerRepository.Repository {
+	if s.postgresRepository == nil {
+		s.postgresRepository = postgres.NewBannerRepository(s.GetDB(ctx), s.GetLogger())
+		return s.postgresRepository
 	}
 
-	return s.bannerRepository
+	return s.postgresRepository
 }
 
 func (s *serviceProvider) GetBannerService(ctx context.Context) *bannerService.Service {
 	if s.bannerService == nil {
-		bannerRepository := s.GetBannerRepository(ctx)
+		bannerRepository := s.GetPostgresRepository(ctx)
 		s.bannerService = bannerService.NewBannerService(bannerRepository, s.GetLogger(), s.TxManager(ctx))
 	}
 

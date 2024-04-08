@@ -29,12 +29,14 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
             description: Тэг пользователя
         - in: query
           name: feature_id
           required: true
           schema:
             type: integer
+            format: int64
             description: Идентификатор фичи
         - in: query
           name: use_last_revision
@@ -84,24 +86,28 @@ paths:
           required: false
           schema:
             type: integer
+            format: int64
             description: Идентификатор фичи
         - in: query
           name: tag_id
           required: false
           schema:
             type: integer
+            format: int64
             description: Идентификатор тега
         - in: query
           name: limit
           required: false
           schema:
             type: integer
+            format: int64
             description: Лимит 
         - in: query
           name: offset
           required: false
           schema:
             type: integer
+            format: int64
             description: Оффсет 
       responses:
         '200':
@@ -172,6 +178,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
             description: Идентификатор баннера
       requestBody:
         required: true
@@ -214,6 +221,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
             description: Идентификатор баннера
       responses:
         '204':
@@ -242,10 +250,17 @@ components:
   schemas:
     Error:
       type: object
+      required:
+      - error
       properties:
         error:
           type: string
     CreateBannerRequest:
+      required:
+      - tag_ids
+      - feature_id
+      - content
+      - is_active
       type: object
       properties:
         tag_ids:
@@ -253,8 +268,10 @@ components:
           description: Идентификаторы тэгов
           items:
             type: integer
+            format: int64
         feature_id:
           type: integer
+          format: int64
           description: Идентификатор фичи
         content:
           type: object
@@ -266,9 +283,12 @@ components:
           description: Флаг активности баннера
     CreateBannerResponse:
       type: object
+      required: 
+      - banner_id
       properties:
         banner_id:
           type: integer
+          format: int64
           description: Идентификатор созданного баннера
     GetBannerResponse:
       type: object
@@ -278,17 +298,27 @@ components:
       type: array
       items:
         type: object
+        required: 
+        - banner_id
+        - tag_ids
+        - feature_id
+        - content
+        - is_active
+        - created_at
         properties:
           banner_id:
             type: integer
+            format: int64
             description: Идентификатор баннера
           tag_ids:
             type: array
             description: Идентификаторы тэгов
             items:
               type: integer
+              format: int64
           feature_id:
             type: integer
+            format: int64
             description: Идентификатор фичи
           content:
             type: object
@@ -311,13 +341,15 @@ components:
             properties:
               tag_ids:
                 nullable: true
-                type: array
+                type: array                    
                 description: Идентификаторы тэгов
                 items:
                   type: integer
+                  format: int64
               feature_id:
                 nullable: true
                 type: integer
+                format: int64
                 description: Идентификатор фичи
               content:
                 nullable: true

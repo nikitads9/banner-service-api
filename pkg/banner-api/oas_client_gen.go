@@ -26,32 +26,43 @@ import (
 type Invoker interface {
 	// CreateBanner invokes createBanner operation.
 	//
-	// Создание нового баннера.
+	// Создание баннера происходит в транзакции с уровнем
+	// изоляции ReadCommitted. Доступно только админам.
 	//
 	// POST /banner
 	CreateBanner(ctx context.Context, request *CreateBannerRequest) (CreateBannerRes, error)
 	// DeleteBanner invokes deleteBanner operation.
 	//
-	// Удаление баннера по идентификатору.
+	// Удаление баннера по его идентификатору. Доступно
+	// только админам.
 	//
 	// DELETE /banner/{id}
 	DeleteBanner(ctx context.Context, params DeleteBannerParams) (DeleteBannerRes, error)
 	// GetBanner invokes getBanner operation.
 	//
-	// Получение баннера для пользователя.
+	// Получение баннера для пользователя в виде чистого JSON,
+	// который находится по feature_id и tag_id.  По умолчанию из
+	// базы возвращается самая последняя версия.  При
+	// использовании флага use_last_revision данные баннера
+	// возвращаются из резидентной БД.
 	//
 	// GET /user_banner
 	GetBanner(ctx context.Context, params GetBannerParams) (GetBannerRes, error)
 	// GetBanners invokes getBanners operation.
 	//
-	// Получение всех баннеров c фильтрацией по фиче и/или
-	// тегу.
+	// Получение данных о баннерах для админов c фильтрацией
+	// по фиче и/или тегу и возможностью ограничить
+	// количество баннеров.  По умолчанию количество
+	// возвращаемых баннеров равняется 1000. Доступно только
+	// админам.
 	//
 	// GET /banner
 	GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error)
 	// SetBanner invokes setBanner operation.
 	//
-	// Обновление содержимого баннера.
+	// Обновление баннера, поля тела запроса опциональны.
+	// При обновлении создается новая версия и изменяются
+	// прежние. Доступно только админам.
 	//
 	// PATCH /banner/{id}
 	SetBanner(ctx context.Context, request *SetBannerRequest, params SetBannerParams) (SetBannerRes, error)
@@ -109,7 +120,8 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 
 // CreateBanner invokes createBanner operation.
 //
-// Создание нового баннера.
+// Создание баннера происходит в транзакции с уровнем
+// изоляции ReadCommitted. Доступно только админам.
 //
 // POST /banner
 func (c *Client) CreateBanner(ctx context.Context, request *CreateBannerRequest) (CreateBannerRes, error) {
@@ -217,7 +229,8 @@ func (c *Client) sendCreateBanner(ctx context.Context, request *CreateBannerRequ
 
 // DeleteBanner invokes deleteBanner operation.
 //
-// Удаление баннера по идентификатору.
+// Удаление баннера по его идентификатору. Доступно
+// только админам.
 //
 // DELETE /banner/{id}
 func (c *Client) DeleteBanner(ctx context.Context, params DeleteBannerParams) (DeleteBannerRes, error) {
@@ -271,7 +284,7 @@ func (c *Client) sendDeleteBanner(ctx context.Context, params DeleteBannerParams
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.IntToString(params.ID))
+			return e.EncodeValue(conv.Int64ToString(params.ID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -340,7 +353,11 @@ func (c *Client) sendDeleteBanner(ctx context.Context, params DeleteBannerParams
 
 // GetBanner invokes getBanner operation.
 //
-// Получение баннера для пользователя.
+// Получение баннера для пользователя в виде чистого JSON,
+// который находится по feature_id и tag_id.  По умолчанию из
+// базы возвращается самая последняя версия.  При
+// использовании флага use_last_revision данные баннера
+// возвращаются из резидентной БД.
 //
 // GET /user_banner
 func (c *Client) GetBanner(ctx context.Context, params GetBannerParams) (GetBannerRes, error) {
@@ -399,7 +416,7 @@ func (c *Client) sendGetBanner(ctx context.Context, params GetBannerParams) (res
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.IntToString(params.TagID))
+			return e.EncodeValue(conv.Int64ToString(params.TagID))
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
@@ -413,7 +430,7 @@ func (c *Client) sendGetBanner(ctx context.Context, params GetBannerParams) (res
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.IntToString(params.FeatureID))
+			return e.EncodeValue(conv.Int64ToString(params.FeatureID))
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
@@ -494,8 +511,11 @@ func (c *Client) sendGetBanner(ctx context.Context, params GetBannerParams) (res
 
 // GetBanners invokes getBanners operation.
 //
-// Получение всех баннеров c фильтрацией по фиче и/или
-// тегу.
+// Получение данных о баннерах для админов c фильтрацией
+// по фиче и/или тегу и возможностью ограничить
+// количество баннеров.  По умолчанию количество
+// возвращаемых баннеров равняется 1000. Доступно только
+// админам.
 //
 // GET /banner
 func (c *Client) GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error) {
@@ -555,7 +575,7 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.FeatureID.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
+				return e.EncodeValue(conv.Int64ToString(val))
 			}
 			return nil
 		}); err != nil {
@@ -572,7 +592,7 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.TagID.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
+				return e.EncodeValue(conv.Int64ToString(val))
 			}
 			return nil
 		}); err != nil {
@@ -589,7 +609,7 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.Limit.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
+				return e.EncodeValue(conv.Int64ToString(val))
 			}
 			return nil
 		}); err != nil {
@@ -606,7 +626,7 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.Offset.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
+				return e.EncodeValue(conv.Int64ToString(val))
 			}
 			return nil
 		}); err != nil {
@@ -672,7 +692,9 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 
 // SetBanner invokes setBanner operation.
 //
-// Обновление содержимого баннера.
+// Обновление баннера, поля тела запроса опциональны.
+// При обновлении создается новая версия и изменяются
+// прежние. Доступно только админам.
 //
 // PATCH /banner/{id}
 func (c *Client) SetBanner(ctx context.Context, request *SetBannerRequest, params SetBannerParams) (SetBannerRes, error) {
@@ -726,7 +748,7 @@ func (c *Client) sendSetBanner(ctx context.Context, request *SetBannerRequest, p
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.IntToString(params.ID))
+			return e.EncodeValue(conv.Int64ToString(params.ID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}

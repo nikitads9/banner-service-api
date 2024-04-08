@@ -17,7 +17,7 @@ import (
 
 // DeleteBannerParams is parameters of deleteBanner operation.
 type DeleteBannerParams struct {
-	ID int
+	ID int64
 }
 
 func unpackDeleteBannerParams(packed middleware.Parameters) (params DeleteBannerParams) {
@@ -26,7 +26,7 @@ func unpackDeleteBannerParams(packed middleware.Parameters) (params DeleteBanner
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(int64)
 	}
 	return params
 }
@@ -56,7 +56,7 @@ func decodeDeleteBannerParams(args [1]string, argsEscaped bool, r *http.Request)
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToInt64(val)
 				if err != nil {
 					return err
 				}
@@ -82,8 +82,8 @@ func decodeDeleteBannerParams(args [1]string, argsEscaped bool, r *http.Request)
 
 // GetBannerParams is parameters of getBanner operation.
 type GetBannerParams struct {
-	TagID           int
-	FeatureID       int
+	TagID           int64
+	FeatureID       int64
 	UseLastRevision OptBool
 }
 
@@ -93,14 +93,14 @@ func unpackGetBannerParams(packed middleware.Parameters) (params GetBannerParams
 			Name: "tag_id",
 			In:   "query",
 		}
-		params.TagID = packed[key].(int)
+		params.TagID = packed[key].(int64)
 	}
 	{
 		key := middleware.ParameterKey{
 			Name: "feature_id",
 			In:   "query",
 		}
-		params.FeatureID = packed[key].(int)
+		params.FeatureID = packed[key].(int64)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -131,7 +131,7 @@ func decodeGetBannerParams(args [0]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToInt64(val)
 				if err != nil {
 					return err
 				}
@@ -167,7 +167,7 @@ func decodeGetBannerParams(args [0]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToInt64(val)
 				if err != nil {
 					return err
 				}
@@ -239,10 +239,10 @@ func decodeGetBannerParams(args [0]string, argsEscaped bool, r *http.Request) (p
 
 // GetBannersParams is parameters of getBanners operation.
 type GetBannersParams struct {
-	FeatureID OptInt
-	TagID     OptInt
-	Limit     OptInt
-	Offset    OptInt
+	FeatureID OptInt64
+	TagID     OptInt64
+	Limit     OptInt64
+	Offset    OptInt64
 }
 
 func unpackGetBannersParams(packed middleware.Parameters) (params GetBannersParams) {
@@ -252,7 +252,7 @@ func unpackGetBannersParams(packed middleware.Parameters) (params GetBannersPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.FeatureID = v.(OptInt)
+			params.FeatureID = v.(OptInt64)
 		}
 	}
 	{
@@ -261,7 +261,7 @@ func unpackGetBannersParams(packed middleware.Parameters) (params GetBannersPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.TagID = v.(OptInt)
+			params.TagID = v.(OptInt64)
 		}
 	}
 	{
@@ -270,7 +270,7 @@ func unpackGetBannersParams(packed middleware.Parameters) (params GetBannersPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Limit = v.(OptInt)
+			params.Limit = v.(OptInt64)
 		}
 	}
 	{
@@ -279,7 +279,7 @@ func unpackGetBannersParams(packed middleware.Parameters) (params GetBannersPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Offset = v.(OptInt)
+			params.Offset = v.(OptInt64)
 		}
 	}
 	return params
@@ -297,14 +297,14 @@ func decodeGetBannersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotFeatureIDVal int
+				var paramsDotFeatureIDVal int64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToInt(val)
+					c, err := conv.ToInt64(val)
 					if err != nil {
 						return err
 					}
@@ -338,14 +338,14 @@ func decodeGetBannersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotTagIDVal int
+				var paramsDotTagIDVal int64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToInt(val)
+					c, err := conv.ToInt64(val)
 					if err != nil {
 						return err
 					}
@@ -379,14 +379,14 @@ func decodeGetBannersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLimitVal int
+				var paramsDotLimitVal int64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToInt(val)
+					c, err := conv.ToInt64(val)
 					if err != nil {
 						return err
 					}
@@ -420,14 +420,14 @@ func decodeGetBannersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotOffsetVal int
+				var paramsDotOffsetVal int64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToInt(val)
+					c, err := conv.ToInt64(val)
 					if err != nil {
 						return err
 					}
@@ -456,7 +456,7 @@ func decodeGetBannersParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 // SetBannerParams is parameters of setBanner operation.
 type SetBannerParams struct {
-	ID int
+	ID int64
 }
 
 func unpackSetBannerParams(packed middleware.Parameters) (params SetBannerParams) {
@@ -465,7 +465,7 @@ func unpackSetBannerParams(packed middleware.Parameters) (params SetBannerParams
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(int64)
 	}
 	return params
 }
@@ -495,7 +495,7 @@ func decodeSetBannerParams(args [1]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToInt64(val)
 				if err != nil {
 					return err
 				}

@@ -38,52 +38,52 @@ func (*CreateBannerInternalServerError) createBannerRes() {}
 // Ref: #/components/schemas/CreateBannerRequest
 type CreateBannerRequest struct {
 	// Идентификаторы тэгов.
-	TagIds []int `json:"tag_ids"`
+	TagIds []int64 `json:"tag_ids"`
 	// Идентификатор фичи.
-	FeatureID OptInt `json:"feature_id"`
+	FeatureID int64 `json:"feature_id"`
 	// Содержимое баннера.
-	Content OptCreateBannerRequestContent `json:"content"`
+	Content CreateBannerRequestContent `json:"content"`
 	// Флаг активности баннера.
-	IsActive OptBool `json:"is_active"`
+	IsActive bool `json:"is_active"`
 }
 
 // GetTagIds returns the value of TagIds.
-func (s *CreateBannerRequest) GetTagIds() []int {
+func (s *CreateBannerRequest) GetTagIds() []int64 {
 	return s.TagIds
 }
 
 // GetFeatureID returns the value of FeatureID.
-func (s *CreateBannerRequest) GetFeatureID() OptInt {
+func (s *CreateBannerRequest) GetFeatureID() int64 {
 	return s.FeatureID
 }
 
 // GetContent returns the value of Content.
-func (s *CreateBannerRequest) GetContent() OptCreateBannerRequestContent {
+func (s *CreateBannerRequest) GetContent() CreateBannerRequestContent {
 	return s.Content
 }
 
 // GetIsActive returns the value of IsActive.
-func (s *CreateBannerRequest) GetIsActive() OptBool {
+func (s *CreateBannerRequest) GetIsActive() bool {
 	return s.IsActive
 }
 
 // SetTagIds sets the value of TagIds.
-func (s *CreateBannerRequest) SetTagIds(val []int) {
+func (s *CreateBannerRequest) SetTagIds(val []int64) {
 	s.TagIds = val
 }
 
 // SetFeatureID sets the value of FeatureID.
-func (s *CreateBannerRequest) SetFeatureID(val OptInt) {
+func (s *CreateBannerRequest) SetFeatureID(val int64) {
 	s.FeatureID = val
 }
 
 // SetContent sets the value of Content.
-func (s *CreateBannerRequest) SetContent(val OptCreateBannerRequestContent) {
+func (s *CreateBannerRequest) SetContent(val CreateBannerRequestContent) {
 	s.Content = val
 }
 
 // SetIsActive sets the value of IsActive.
-func (s *CreateBannerRequest) SetIsActive(val OptBool) {
+func (s *CreateBannerRequest) SetIsActive(val bool) {
 	s.IsActive = val
 }
 
@@ -102,16 +102,16 @@ func (s *CreateBannerRequestContent) init() CreateBannerRequestContent {
 // Ref: #/components/schemas/CreateBannerResponse
 type CreateBannerResponse struct {
 	// Идентификатор созданного баннера.
-	BannerID OptInt `json:"banner_id"`
+	BannerID int64 `json:"banner_id"`
 }
 
 // GetBannerID returns the value of BannerID.
-func (s *CreateBannerResponse) GetBannerID() OptInt {
+func (s *CreateBannerResponse) GetBannerID() int64 {
 	return s.BannerID
 }
 
 // SetBannerID sets the value of BannerID.
-func (s *CreateBannerResponse) SetBannerID(val OptInt) {
+func (s *CreateBannerResponse) SetBannerID(val int64) {
 	s.BannerID = val
 }
 
@@ -152,16 +152,16 @@ func (*DeleteBannerUnauthorized) deleteBannerRes() {}
 
 // Ref: #/components/schemas/Error
 type Error struct {
-	Error OptString `json:"error"`
+	Error string `json:"error"`
 }
 
 // GetError returns the value of Error.
-func (s *Error) GetError() OptString {
+func (s *Error) GetError() string {
 	return s.Error
 }
 
 // SetError sets the value of Error.
-func (s *Error) SetError(val OptString) {
+func (s *Error) SetError(val string) {
 	s.Error = val
 }
 
@@ -215,48 +215,48 @@ func (*GetBannersResponse) getBannersRes() {}
 
 type GetBannersResponseItem struct {
 	// Идентификатор баннера.
-	BannerID OptInt `json:"banner_id"`
+	BannerID int64 `json:"banner_id"`
 	// Идентификаторы тэгов.
-	TagIds []int `json:"tag_ids"`
+	TagIds []int64 `json:"tag_ids"`
 	// Идентификатор фичи.
-	FeatureID OptInt `json:"feature_id"`
+	FeatureID int64 `json:"feature_id"`
 	// Содержимое баннера.
-	Content OptGetBannersResponseItemContent `json:"content"`
+	Content GetBannersResponseItemContent `json:"content"`
 	// Флаг активности баннера.
-	IsActive OptBool `json:"is_active"`
+	IsActive bool `json:"is_active"`
 	// Дата создания баннера.
-	CreatedAt OptDateTime `json:"created_at"`
+	CreatedAt time.Time `json:"created_at"`
 	// Дата обновления баннера.
 	UpdatedAt OptDateTime `json:"updated_at"`
 }
 
 // GetBannerID returns the value of BannerID.
-func (s *GetBannersResponseItem) GetBannerID() OptInt {
+func (s *GetBannersResponseItem) GetBannerID() int64 {
 	return s.BannerID
 }
 
 // GetTagIds returns the value of TagIds.
-func (s *GetBannersResponseItem) GetTagIds() []int {
+func (s *GetBannersResponseItem) GetTagIds() []int64 {
 	return s.TagIds
 }
 
 // GetFeatureID returns the value of FeatureID.
-func (s *GetBannersResponseItem) GetFeatureID() OptInt {
+func (s *GetBannersResponseItem) GetFeatureID() int64 {
 	return s.FeatureID
 }
 
 // GetContent returns the value of Content.
-func (s *GetBannersResponseItem) GetContent() OptGetBannersResponseItemContent {
+func (s *GetBannersResponseItem) GetContent() GetBannersResponseItemContent {
 	return s.Content
 }
 
 // GetIsActive returns the value of IsActive.
-func (s *GetBannersResponseItem) GetIsActive() OptBool {
+func (s *GetBannersResponseItem) GetIsActive() bool {
 	return s.IsActive
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *GetBannersResponseItem) GetCreatedAt() OptDateTime {
+func (s *GetBannersResponseItem) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
@@ -266,32 +266,32 @@ func (s *GetBannersResponseItem) GetUpdatedAt() OptDateTime {
 }
 
 // SetBannerID sets the value of BannerID.
-func (s *GetBannersResponseItem) SetBannerID(val OptInt) {
+func (s *GetBannersResponseItem) SetBannerID(val int64) {
 	s.BannerID = val
 }
 
 // SetTagIds sets the value of TagIds.
-func (s *GetBannersResponseItem) SetTagIds(val []int) {
+func (s *GetBannersResponseItem) SetTagIds(val []int64) {
 	s.TagIds = val
 }
 
 // SetFeatureID sets the value of FeatureID.
-func (s *GetBannersResponseItem) SetFeatureID(val OptInt) {
+func (s *GetBannersResponseItem) SetFeatureID(val int64) {
 	s.FeatureID = val
 }
 
 // SetContent sets the value of Content.
-func (s *GetBannersResponseItem) SetContent(val OptGetBannersResponseItemContent) {
+func (s *GetBannersResponseItem) SetContent(val GetBannersResponseItemContent) {
 	s.Content = val
 }
 
 // SetIsActive sets the value of IsActive.
-func (s *GetBannersResponseItem) SetIsActive(val OptBool) {
+func (s *GetBannersResponseItem) SetIsActive(val bool) {
 	s.IsActive = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *GetBannersResponseItem) SetCreatedAt(val OptDateTime) {
+func (s *GetBannersResponseItem) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
@@ -363,52 +363,6 @@ func (o OptBool) Or(d bool) bool {
 	return d
 }
 
-// NewOptCreateBannerRequestContent returns new OptCreateBannerRequestContent with value set to v.
-func NewOptCreateBannerRequestContent(v CreateBannerRequestContent) OptCreateBannerRequestContent {
-	return OptCreateBannerRequestContent{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptCreateBannerRequestContent is optional CreateBannerRequestContent.
-type OptCreateBannerRequestContent struct {
-	Value CreateBannerRequestContent
-	Set   bool
-}
-
-// IsSet returns true if OptCreateBannerRequestContent was set.
-func (o OptCreateBannerRequestContent) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptCreateBannerRequestContent) Reset() {
-	var v CreateBannerRequestContent
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptCreateBannerRequestContent) SetTo(v CreateBannerRequestContent) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptCreateBannerRequestContent) Get() (v CreateBannerRequestContent, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptCreateBannerRequestContent) Or(d CreateBannerRequestContent) CreateBannerRequestContent {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
 	return OptDateTime{
@@ -455,38 +409,38 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
-// NewOptGetBannersResponseItemContent returns new OptGetBannersResponseItemContent with value set to v.
-func NewOptGetBannersResponseItemContent(v GetBannersResponseItemContent) OptGetBannersResponseItemContent {
-	return OptGetBannersResponseItemContent{
+// NewOptInt64 returns new OptInt64 with value set to v.
+func NewOptInt64(v int64) OptInt64 {
+	return OptInt64{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptGetBannersResponseItemContent is optional GetBannersResponseItemContent.
-type OptGetBannersResponseItemContent struct {
-	Value GetBannersResponseItemContent
+// OptInt64 is optional int64.
+type OptInt64 struct {
+	Value int64
 	Set   bool
 }
 
-// IsSet returns true if OptGetBannersResponseItemContent was set.
-func (o OptGetBannersResponseItemContent) IsSet() bool { return o.Set }
+// IsSet returns true if OptInt64 was set.
+func (o OptInt64) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptGetBannersResponseItemContent) Reset() {
-	var v GetBannersResponseItemContent
+func (o *OptInt64) Reset() {
+	var v int64
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptGetBannersResponseItemContent) SetTo(v GetBannersResponseItemContent) {
+func (o *OptInt64) SetTo(v int64) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptGetBannersResponseItemContent) Get() (v GetBannersResponseItemContent, ok bool) {
+func (o OptInt64) Get() (v int64, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -494,53 +448,7 @@ func (o OptGetBannersResponseItemContent) Get() (v GetBannersResponseItemContent
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptGetBannersResponseItemContent) Or(d GetBannersResponseItemContent) GetBannersResponseItemContent {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptInt returns new OptInt with value set to v.
-func NewOptInt(v int) OptInt {
-	return OptInt{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptInt is optional int.
-type OptInt struct {
-	Value int
-	Set   bool
-}
-
-// IsSet returns true if OptInt was set.
-func (o OptInt) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptInt) Reset() {
-	var v int
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptInt) SetTo(v int) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptInt) Get() (v int, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptInt) Or(d int) int {
+func (o OptInt64) Or(d int64) int64 {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -610,52 +518,52 @@ func (o OptNilBool) Or(d bool) bool {
 	return d
 }
 
-// NewOptNilInt returns new OptNilInt with value set to v.
-func NewOptNilInt(v int) OptNilInt {
-	return OptNilInt{
+// NewOptNilInt64 returns new OptNilInt64 with value set to v.
+func NewOptNilInt64(v int64) OptNilInt64 {
+	return OptNilInt64{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptNilInt is optional nullable int.
-type OptNilInt struct {
-	Value int
+// OptNilInt64 is optional nullable int64.
+type OptNilInt64 struct {
+	Value int64
 	Set   bool
 	Null  bool
 }
 
-// IsSet returns true if OptNilInt was set.
-func (o OptNilInt) IsSet() bool { return o.Set }
+// IsSet returns true if OptNilInt64 was set.
+func (o OptNilInt64) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptNilInt) Reset() {
-	var v int
+func (o *OptNilInt64) Reset() {
+	var v int64
 	o.Value = v
 	o.Set = false
 	o.Null = false
 }
 
 // SetTo sets value to v.
-func (o *OptNilInt) SetTo(v int) {
+func (o *OptNilInt64) SetTo(v int64) {
 	o.Set = true
 	o.Null = false
 	o.Value = v
 }
 
 // IsSet returns true if value is Null.
-func (o OptNilInt) IsNull() bool { return o.Null }
+func (o OptNilInt64) IsNull() bool { return o.Null }
 
 // SetNull sets value to null.
-func (o *OptNilInt) SetToNull() {
+func (o *OptNilInt64) SetToNull() {
 	o.Set = true
 	o.Null = true
-	var v int
+	var v int64
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptNilInt) Get() (v int, ok bool) {
+func (o OptNilInt64) Get() (v int64, ok bool) {
 	if o.Null {
 		return v, false
 	}
@@ -666,59 +574,59 @@ func (o OptNilInt) Get() (v int, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptNilInt) Or(d int) int {
+func (o OptNilInt64) Or(d int64) int64 {
 	if v, ok := o.Get(); ok {
 		return v
 	}
 	return d
 }
 
-// NewOptNilIntArray returns new OptNilIntArray with value set to v.
-func NewOptNilIntArray(v []int) OptNilIntArray {
-	return OptNilIntArray{
+// NewOptNilInt64Array returns new OptNilInt64Array with value set to v.
+func NewOptNilInt64Array(v []int64) OptNilInt64Array {
+	return OptNilInt64Array{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptNilIntArray is optional nullable []int.
-type OptNilIntArray struct {
-	Value []int
+// OptNilInt64Array is optional nullable []int64.
+type OptNilInt64Array struct {
+	Value []int64
 	Set   bool
 	Null  bool
 }
 
-// IsSet returns true if OptNilIntArray was set.
-func (o OptNilIntArray) IsSet() bool { return o.Set }
+// IsSet returns true if OptNilInt64Array was set.
+func (o OptNilInt64Array) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptNilIntArray) Reset() {
-	var v []int
+func (o *OptNilInt64Array) Reset() {
+	var v []int64
 	o.Value = v
 	o.Set = false
 	o.Null = false
 }
 
 // SetTo sets value to v.
-func (o *OptNilIntArray) SetTo(v []int) {
+func (o *OptNilInt64Array) SetTo(v []int64) {
 	o.Set = true
 	o.Null = false
 	o.Value = v
 }
 
 // IsSet returns true if value is Null.
-func (o OptNilIntArray) IsNull() bool { return o.Null }
+func (o OptNilInt64Array) IsNull() bool { return o.Null }
 
 // SetNull sets value to null.
-func (o *OptNilIntArray) SetToNull() {
+func (o *OptNilInt64Array) SetToNull() {
 	o.Set = true
 	o.Null = true
-	var v []int
+	var v []int64
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptNilIntArray) Get() (v []int, ok bool) {
+func (o OptNilInt64Array) Get() (v []int64, ok bool) {
 	if o.Null {
 		return v, false
 	}
@@ -729,7 +637,7 @@ func (o OptNilIntArray) Get() (v []int, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptNilIntArray) Or(d []int) []int {
+func (o OptNilInt64Array) Or(d []int64) []int64 {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -799,52 +707,6 @@ func (o OptNilSetBannerRequestContent) Or(d SetBannerRequestContent) SetBannerRe
 	return d
 }
 
-// NewOptString returns new OptString with value set to v.
-func NewOptString(v string) OptString {
-	return OptString{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptString is optional string.
-type OptString struct {
-	Value string
-	Set   bool
-}
-
-// IsSet returns true if OptString was set.
-func (o OptString) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptString) Reset() {
-	var v string
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptString) SetTo(v string) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptString) Get() (v string, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptString) Or(d string) string {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 type SetBannerBadRequest Error
 
 func (*SetBannerBadRequest) setBannerRes() {}
@@ -871,9 +733,9 @@ func (*SetBannerOK) setBannerRes() {}
 // Ref: #/components/schemas/SetBannerRequest
 type SetBannerRequest struct {
 	// Идентификаторы тэгов.
-	TagIds OptNilIntArray `json:"tag_ids"`
+	TagIds OptNilInt64Array `json:"tag_ids"`
 	// Идентификатор фичи.
-	FeatureID OptNilInt `json:"feature_id"`
+	FeatureID OptNilInt64 `json:"feature_id"`
 	// Содержимое баннера.
 	Content OptNilSetBannerRequestContent `json:"content"`
 	// Флаг активности баннера.
@@ -881,12 +743,12 @@ type SetBannerRequest struct {
 }
 
 // GetTagIds returns the value of TagIds.
-func (s *SetBannerRequest) GetTagIds() OptNilIntArray {
+func (s *SetBannerRequest) GetTagIds() OptNilInt64Array {
 	return s.TagIds
 }
 
 // GetFeatureID returns the value of FeatureID.
-func (s *SetBannerRequest) GetFeatureID() OptNilInt {
+func (s *SetBannerRequest) GetFeatureID() OptNilInt64 {
 	return s.FeatureID
 }
 
@@ -901,12 +763,12 @@ func (s *SetBannerRequest) GetIsActive() OptNilBool {
 }
 
 // SetTagIds sets the value of TagIds.
-func (s *SetBannerRequest) SetTagIds(val OptNilIntArray) {
+func (s *SetBannerRequest) SetTagIds(val OptNilInt64Array) {
 	s.TagIds = val
 }
 
 // SetFeatureID sets the value of FeatureID.
-func (s *SetBannerRequest) SetFeatureID(val OptNilInt) {
+func (s *SetBannerRequest) SetFeatureID(val OptNilInt64) {
 	s.FeatureID = val
 }
 

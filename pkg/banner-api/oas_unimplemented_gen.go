@@ -15,7 +15,8 @@ var _ Handler = UnimplementedHandler{}
 
 // CreateBanner implements createBanner operation.
 //
-// Создание нового баннера.
+// Создание баннера происходит в транзакции с уровнем
+// изоляции ReadCommitted. Доступно только админам.
 //
 // POST /banner
 func (UnimplementedHandler) CreateBanner(ctx context.Context, req *CreateBannerRequest) (r CreateBannerRes, _ error) {
@@ -24,7 +25,8 @@ func (UnimplementedHandler) CreateBanner(ctx context.Context, req *CreateBannerR
 
 // DeleteBanner implements deleteBanner operation.
 //
-// Удаление баннера по идентификатору.
+// Удаление баннера по его идентификатору. Доступно
+// только админам.
 //
 // DELETE /banner/{id}
 func (UnimplementedHandler) DeleteBanner(ctx context.Context, params DeleteBannerParams) (r DeleteBannerRes, _ error) {
@@ -33,7 +35,11 @@ func (UnimplementedHandler) DeleteBanner(ctx context.Context, params DeleteBanne
 
 // GetBanner implements getBanner operation.
 //
-// Получение баннера для пользователя.
+// Получение баннера для пользователя в виде чистого JSON,
+// который находится по feature_id и tag_id.  По умолчанию из
+// базы возвращается самая последняя версия.  При
+// использовании флага use_last_revision данные баннера
+// возвращаются из резидентной БД.
 //
 // GET /user_banner
 func (UnimplementedHandler) GetBanner(ctx context.Context, params GetBannerParams) (r GetBannerRes, _ error) {
@@ -42,8 +48,11 @@ func (UnimplementedHandler) GetBanner(ctx context.Context, params GetBannerParam
 
 // GetBanners implements getBanners operation.
 //
-// Получение всех баннеров c фильтрацией по фиче и/или
-// тегу.
+// Получение данных о баннерах для админов c фильтрацией
+// по фиче и/или тегу и возможностью ограничить
+// количество баннеров.  По умолчанию количество
+// возвращаемых баннеров равняется 1000. Доступно только
+// админам.
 //
 // GET /banner
 func (UnimplementedHandler) GetBanners(ctx context.Context, params GetBannersParams) (r GetBannersRes, _ error) {
@@ -52,7 +61,9 @@ func (UnimplementedHandler) GetBanners(ctx context.Context, params GetBannersPar
 
 // SetBanner implements setBanner operation.
 //
-// Обновление содержимого баннера.
+// Обновление баннера, поля тела запроса опциональны.
+// При обновлении создается новая версия и изменяются
+// прежние. Доступно только админам.
 //
 // PATCH /banner/{id}
 func (UnimplementedHandler) SetBanner(ctx context.Context, req *SetBannerRequest, params SetBannerParams) (r SetBannerRes, _ error) {

@@ -3,12 +3,15 @@
 package api
 
 import (
+	"math/bits"
+	"strconv"
 	"time"
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
 
 	"github.com/ogen-go/ogen/json"
+	"github.com/ogen-go/ogen/validate"
 )
 
 // Encode encodes CreateBannerBadRequest as json.
@@ -97,32 +100,24 @@ func (s *CreateBannerRequest) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *CreateBannerRequest) encodeFields(e *jx.Encoder) {
 	{
-		if s.TagIds != nil {
-			e.FieldStart("tag_ids")
-			e.ArrStart()
-			for _, elem := range s.TagIds {
-				e.Int(elem)
-			}
-			e.ArrEnd()
+		e.FieldStart("tag_ids")
+		e.ArrStart()
+		for _, elem := range s.TagIds {
+			e.Int64(elem)
 		}
+		e.ArrEnd()
 	}
 	{
-		if s.FeatureID.Set {
-			e.FieldStart("feature_id")
-			s.FeatureID.Encode(e)
-		}
+		e.FieldStart("feature_id")
+		e.Int64(s.FeatureID)
 	}
 	{
-		if s.Content.Set {
-			e.FieldStart("content")
-			s.Content.Encode(e)
-		}
+		e.FieldStart("content")
+		s.Content.Encode(e)
 	}
 	{
-		if s.IsActive.Set {
-			e.FieldStart("is_active")
-			s.IsActive.Encode(e)
-		}
+		e.FieldStart("is_active")
+		e.Bool(s.IsActive)
 	}
 }
 
@@ -138,16 +133,18 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateBannerRequest to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "tag_ids":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.TagIds = make([]int, 0)
+				s.TagIds = make([]int64, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem int64
+					v, err := d.Int64()
+					elem = int64(v)
 					if err != nil {
 						return err
 					}
@@ -161,9 +158,11 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"tag_ids\"")
 			}
 		case "feature_id":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.FeatureID.Reset()
-				if err := s.FeatureID.Decode(d); err != nil {
+				v, err := d.Int64()
+				s.FeatureID = int64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -171,8 +170,8 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"feature_id\"")
 			}
 		case "content":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.Content.Reset()
 				if err := s.Content.Decode(d); err != nil {
 					return err
 				}
@@ -181,9 +180,11 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"content\"")
 			}
 		case "is_active":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				s.IsActive.Reset()
-				if err := s.IsActive.Decode(d); err != nil {
+				v, err := d.Bool()
+				s.IsActive = bool(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -196,6 +197,38 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode CreateBannerRequest")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00001111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfCreateBannerRequest) {
+					name = jsonFieldsNameOfCreateBannerRequest[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -282,10 +315,8 @@ func (s *CreateBannerResponse) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *CreateBannerResponse) encodeFields(e *jx.Encoder) {
 	{
-		if s.BannerID.Set {
-			e.FieldStart("banner_id")
-			s.BannerID.Encode(e)
-		}
+		e.FieldStart("banner_id")
+		e.Int64(s.BannerID)
 	}
 }
 
@@ -298,13 +329,16 @@ func (s *CreateBannerResponse) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateBannerResponse to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "banner_id":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.BannerID.Reset()
-				if err := s.BannerID.Decode(d); err != nil {
+				v, err := d.Int64()
+				s.BannerID = int64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -317,6 +351,38 @@ func (s *CreateBannerResponse) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode CreateBannerResponse")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfCreateBannerResponse) {
+					name = jsonFieldsNameOfCreateBannerResponse[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -421,10 +487,8 @@ func (s *Error) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Error) encodeFields(e *jx.Encoder) {
 	{
-		if s.Error.Set {
-			e.FieldStart("error")
-			s.Error.Encode(e)
-		}
+		e.FieldStart("error")
+		e.Str(s.Error)
 	}
 }
 
@@ -437,13 +501,16 @@ func (s *Error) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Error to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "error":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Error.Reset()
-				if err := s.Error.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Error = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -456,6 +523,38 @@ func (s *Error) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode Error")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfError) {
+					name = jsonFieldsNameOfError[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -668,44 +767,32 @@ func (s *GetBannersResponseItem) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *GetBannersResponseItem) encodeFields(e *jx.Encoder) {
 	{
-		if s.BannerID.Set {
-			e.FieldStart("banner_id")
-			s.BannerID.Encode(e)
-		}
+		e.FieldStart("banner_id")
+		e.Int64(s.BannerID)
 	}
 	{
-		if s.TagIds != nil {
-			e.FieldStart("tag_ids")
-			e.ArrStart()
-			for _, elem := range s.TagIds {
-				e.Int(elem)
-			}
-			e.ArrEnd()
+		e.FieldStart("tag_ids")
+		e.ArrStart()
+		for _, elem := range s.TagIds {
+			e.Int64(elem)
 		}
+		e.ArrEnd()
 	}
 	{
-		if s.FeatureID.Set {
-			e.FieldStart("feature_id")
-			s.FeatureID.Encode(e)
-		}
+		e.FieldStart("feature_id")
+		e.Int64(s.FeatureID)
 	}
 	{
-		if s.Content.Set {
-			e.FieldStart("content")
-			s.Content.Encode(e)
-		}
+		e.FieldStart("content")
+		s.Content.Encode(e)
 	}
 	{
-		if s.IsActive.Set {
-			e.FieldStart("is_active")
-			s.IsActive.Encode(e)
-		}
+		e.FieldStart("is_active")
+		e.Bool(s.IsActive)
 	}
 	{
-		if s.CreatedAt.Set {
-			e.FieldStart("created_at")
-			s.CreatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("created_at")
+		json.EncodeDateTime(e, s.CreatedAt)
 	}
 	{
 		if s.UpdatedAt.Set {
@@ -730,13 +817,16 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode GetBannersResponseItem to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "banner_id":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.BannerID.Reset()
-				if err := s.BannerID.Decode(d); err != nil {
+				v, err := d.Int64()
+				s.BannerID = int64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -744,12 +834,13 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"banner_id\"")
 			}
 		case "tag_ids":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.TagIds = make([]int, 0)
+				s.TagIds = make([]int64, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem int
-					v, err := d.Int()
-					elem = int(v)
+					var elem int64
+					v, err := d.Int64()
+					elem = int64(v)
 					if err != nil {
 						return err
 					}
@@ -763,9 +854,11 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"tag_ids\"")
 			}
 		case "feature_id":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.FeatureID.Reset()
-				if err := s.FeatureID.Decode(d); err != nil {
+				v, err := d.Int64()
+				s.FeatureID = int64(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -773,8 +866,8 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"feature_id\"")
 			}
 		case "content":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				s.Content.Reset()
 				if err := s.Content.Decode(d); err != nil {
 					return err
 				}
@@ -783,9 +876,11 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"content\"")
 			}
 		case "is_active":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				s.IsActive.Reset()
-				if err := s.IsActive.Decode(d); err != nil {
+				v, err := d.Bool()
+				s.IsActive = bool(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -793,9 +888,11 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"is_active\"")
 			}
 		case "created_at":
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				s.CreatedAt.Reset()
-				if err := s.CreatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.CreatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -818,6 +915,38 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode GetBannersResponseItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00111111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfGetBannersResponseItem) {
+					name = jsonFieldsNameOfGetBannersResponseItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -894,75 +1023,6 @@ func (s *GetBannersResponseItemContent) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes bool as json.
-func (o OptBool) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.Bool(bool(o.Value))
-}
-
-// Decode decodes bool from json.
-func (o *OptBool) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptBool to nil")
-	}
-	o.Set = true
-	v, err := d.Bool()
-	if err != nil {
-		return err
-	}
-	o.Value = bool(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptBool) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptBool) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes CreateBannerRequestContent as json.
-func (o OptCreateBannerRequestContent) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	o.Value.Encode(e)
-}
-
-// Decode decodes CreateBannerRequestContent from json.
-func (o *OptCreateBannerRequestContent) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptCreateBannerRequestContent to nil")
-	}
-	o.Set = true
-	o.Value = make(CreateBannerRequestContent)
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptCreateBannerRequestContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptCreateBannerRequestContent) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes time.Time as json.
 func (o OptDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
 	if !o.Set {
@@ -996,75 +1056,6 @@ func (s OptDateTime) MarshalJSON() ([]byte, error) {
 func (s *OptDateTime) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d, json.DecodeDateTime)
-}
-
-// Encode encodes GetBannersResponseItemContent as json.
-func (o OptGetBannersResponseItemContent) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	o.Value.Encode(e)
-}
-
-// Decode decodes GetBannersResponseItemContent from json.
-func (o *OptGetBannersResponseItemContent) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptGetBannersResponseItemContent to nil")
-	}
-	o.Set = true
-	o.Value = make(GetBannersResponseItemContent)
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptGetBannersResponseItemContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptGetBannersResponseItemContent) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes int as json.
-func (o OptInt) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.Int(int(o.Value))
-}
-
-// Decode decodes int from json.
-func (o *OptInt) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptInt to nil")
-	}
-	o.Set = true
-	v, err := d.Int()
-	if err != nil {
-		return err
-	}
-	o.Value = int(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptInt) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptInt) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
 }
 
 // Encode encodes bool as json.
@@ -1118,8 +1109,8 @@ func (s *OptNilBool) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes int as json.
-func (o OptNilInt) Encode(e *jx.Encoder) {
+// Encode encodes int64 as json.
+func (o OptNilInt64) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
@@ -1127,20 +1118,20 @@ func (o OptNilInt) Encode(e *jx.Encoder) {
 		e.Null()
 		return
 	}
-	e.Int(int(o.Value))
+	e.Int64(int64(o.Value))
 }
 
-// Decode decodes int from json.
-func (o *OptNilInt) Decode(d *jx.Decoder) error {
+// Decode decodes int64 from json.
+func (o *OptNilInt64) Decode(d *jx.Decoder) error {
 	if o == nil {
-		return errors.New("invalid: unable to decode OptNilInt to nil")
+		return errors.New("invalid: unable to decode OptNilInt64 to nil")
 	}
 	if d.Next() == jx.Null {
 		if err := d.Null(); err != nil {
 			return err
 		}
 
-		var v int
+		var v int64
 		o.Value = v
 		o.Set = true
 		o.Null = true
@@ -1148,29 +1139,29 @@ func (o *OptNilInt) Decode(d *jx.Decoder) error {
 	}
 	o.Set = true
 	o.Null = false
-	v, err := d.Int()
+	v, err := d.Int64()
 	if err != nil {
 		return err
 	}
-	o.Value = int(v)
+	o.Value = int64(v)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s OptNilInt) MarshalJSON() ([]byte, error) {
+func (s OptNilInt64) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptNilInt) UnmarshalJSON(data []byte) error {
+func (s *OptNilInt64) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
-// Encode encodes []int as json.
-func (o OptNilIntArray) Encode(e *jx.Encoder) {
+// Encode encodes []int64 as json.
+func (o OptNilInt64Array) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
@@ -1180,22 +1171,22 @@ func (o OptNilIntArray) Encode(e *jx.Encoder) {
 	}
 	e.ArrStart()
 	for _, elem := range o.Value {
-		e.Int(elem)
+		e.Int64(elem)
 	}
 	e.ArrEnd()
 }
 
-// Decode decodes []int from json.
-func (o *OptNilIntArray) Decode(d *jx.Decoder) error {
+// Decode decodes []int64 from json.
+func (o *OptNilInt64Array) Decode(d *jx.Decoder) error {
 	if o == nil {
-		return errors.New("invalid: unable to decode OptNilIntArray to nil")
+		return errors.New("invalid: unable to decode OptNilInt64Array to nil")
 	}
 	if d.Next() == jx.Null {
 		if err := d.Null(); err != nil {
 			return err
 		}
 
-		var v []int
+		var v []int64
 		o.Value = v
 		o.Set = true
 		o.Null = true
@@ -1203,11 +1194,11 @@ func (o *OptNilIntArray) Decode(d *jx.Decoder) error {
 	}
 	o.Set = true
 	o.Null = false
-	o.Value = make([]int, 0)
+	o.Value = make([]int64, 0)
 	if err := d.Arr(func(d *jx.Decoder) error {
-		var elem int
-		v, err := d.Int()
-		elem = int(v)
+		var elem int64
+		v, err := d.Int64()
+		elem = int64(v)
 		if err != nil {
 			return err
 		}
@@ -1220,14 +1211,14 @@ func (o *OptNilIntArray) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s OptNilIntArray) MarshalJSON() ([]byte, error) {
+func (s OptNilInt64Array) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptNilIntArray) UnmarshalJSON(data []byte) error {
+func (s *OptNilInt64Array) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1278,41 +1269,6 @@ func (s OptNilSetBannerRequestContent) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptNilSetBannerRequestContent) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes string as json.
-func (o OptString) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.Str(string(o.Value))
-}
-
-// Decode decodes string from json.
-func (o *OptString) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptString to nil")
-	}
-	o.Set = true
-	v, err := d.Str()
-	if err != nil {
-		return err
-	}
-	o.Value = string(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptString) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptString) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

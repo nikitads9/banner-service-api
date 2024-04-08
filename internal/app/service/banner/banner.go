@@ -11,9 +11,10 @@ import (
 )
 
 type Service struct {
-	bannerRepository banner.Repository
-	log              *slog.Logger
-	txManager        db.TxManager
+	postgresRepository banner.Repository
+	redisRepository    banner.Repository
+	log                *slog.Logger
+	txManager          db.TxManager
 }
 
 var (
@@ -23,8 +24,8 @@ var (
 
 func NewBannerService(bannerRepository banner.Repository, log *slog.Logger, txManager db.TxManager) *Service {
 	return &Service{
-		bannerRepository: bannerRepository,
-		log:              log,
-		txManager:        txManager,
+		postgresRepository: bannerRepository,
+		log:                log,
+		txManager:          txManager,
 	}
 }

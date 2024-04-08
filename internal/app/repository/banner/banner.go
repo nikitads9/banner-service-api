@@ -1,37 +1,16 @@
 package banner
 
 import (
-	"errors"
-	"log/slog"
+	"context"
 
-	"github.com/nikitads9/banner-service-api/internal/pkg/db"
-
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/go-faster/jx"
+	"github.com/nikitads9/banner-service-api/internal/app/model"
 )
 
 type Repository interface {
-}
-
-var (
-	ErrNotFound       = errors.New("no banner with these feature id and tag id")
-	ErrNoRowsAffected = errors.New("no database entries affected by this operation")
-
-	ErrQuery        = errors.New("failed to execute query")
-	ErrQueryBuild   = errors.New("failed to build query")
-	ErrPgxScan      = errors.New("failed to read database response")
-	ErrNoConnection = errors.New("could not connect to database")
-
-	pgNoConnection = new(*pgconn.ConnectError)
-)
-
-type repository struct {
-	client db.Client
-	log    *slog.Logger
-}
-
-func NewBannerRepository(client db.Client, log *slog.Logger) Repository {
-	return &repository{
-		client: client,
-		log:    log,
-	}
+	CreateBanner(ctx context.Context, mod *model.Banner) (int64, error)
+	GetBanner(ctx context.Context, featureID int64, tagID int64) (map[string]jx.Raw, error)
+	GetBanners(ctx context.Context, mod *model.GetBannersParams) ([]*model.BannerInfo, error)
+	SetBanner(ctx context.Context, mod *model.SetBannerInfo) error
+	DeleteBanner(ctx context.Context, bannerID int64) error
 }
