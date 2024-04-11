@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 
+	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/postgres"
 	"github.com/nikitads9/banner-service-api/internal/middleware/auth"
 	desc "github.com/nikitads9/banner-service-api/pkg/banner-api"
 )
@@ -20,6 +21,9 @@ func (i *Implementation) DeleteBanner(ctx context.Context, params desc.DeleteBan
 
 	err := i.bannerService.DeleteBanner(ctx, params.ID)
 	if err != nil {
+		if err == postgres.ErrNotFound {
+			return &desc.DeleteBannerNotFound{}, nil
+		}
 		return &desc.DeleteBannerInternalServerError{
 			Error: err.Error(),
 		}, err

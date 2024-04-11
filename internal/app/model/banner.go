@@ -10,18 +10,18 @@ import (
 type Banner struct {
 	FeatureID int64
 	TagIDs    []int64
-	Content   []byte
+	Content   jx.Raw
 	IsActive  bool
 }
 
 type BannerInfo struct {
-	BannerID  int64
-	FeatureID int64
-	TagIDs    []int64
-	Content   map[string]jx.Raw
-	IsActive  bool
-	UpdatedAt sql.NullTime
-	CreatedAt time.Time
+	BannerID  int64        `db:"id"`
+	FeatureID int64        `db:"feature_id"`
+	TagIDs    []int64      `db:"tag_id"`
+	Content   jx.Raw       `db:"content"`
+	IsActive  bool         `db:"is_active"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+	CreatedAt time.Time    `db:"created_at"`
 }
 
 type SetBannerInfo struct {

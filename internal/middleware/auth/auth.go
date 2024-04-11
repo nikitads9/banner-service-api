@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/nikitads9/banner-service-api/internal/app/service/jwt"
+	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	desc "github.com/nikitads9/banner-service-api/pkg/banner-api"
 )
 
@@ -42,7 +43,7 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 	)
 
 	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "AdminToken ") {
-		log.Error("missing token ", errMissingToken)
+		log.Error("missing token ", sl.Err(errMissingToken))
 		//api.WriteWithError(w, http.StatusUnauthorized, errMissingToken.Error())
 		return ctx, errMissingToken
 	}
@@ -50,7 +51,7 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 	token := strings.TrimPrefix(t.APIKey, "AdminToken ")
 	scope, err := s.jwtService.VerifyToken(ctx, token)
 	if err != nil {
-		log.Error("issue verifying jwt token", err)
+		log.Error("issue verifying jwt token", sl.Err(err))
 		//api.WriteWithError(w, http.StatusUnauthorized, errInvalidToken.Error())
 		return ctx, err
 	}
@@ -68,14 +69,14 @@ func (s Security) HandleUserToken(ctx context.Context, operationName string, t d
 	)
 
 	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "UserToken ") {
-		log.Error("missing token ", errMissingToken)
+		log.Error("missing token ", sl.Err(errMissingToken))
 		return ctx, errMissingToken
 	}
 
 	token := strings.TrimPrefix(t.APIKey, "UserToken ")
 	scope, err := s.jwtService.VerifyToken(ctx, token)
 	if err != nil {
-		log.Error("issue verifying jwt token", err)
+		log.Error("issue verifying jwt token", sl.Err(err))
 		return ctx, err
 	}
 

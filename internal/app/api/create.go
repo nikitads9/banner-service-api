@@ -19,14 +19,7 @@ func (i *Implementation) CreateBanner(ctx context.Context, req *desc.CreateBanne
 		return &desc.CreateBannerForbidden{}, nil
 	}
 
-	content, err := req.Content.MarshalJSON()
-	if err != nil {
-		return &desc.CreateBannerBadRequest{
-			Error: err.Error(),
-		}, err
-	}
-
-	id, err := i.bannerService.CreateBanner(ctx, convert.ToBanner(content, req))
+	id, err := i.bannerService.CreateBanner(ctx, convert.ToBanner(req))
 
 	if err != nil {
 		return &desc.CreateBannerInternalServerError{

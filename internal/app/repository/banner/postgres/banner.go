@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	ErrAlreadyExists  = errors.New("this banner already exists")
+	ErrDuplicate      = "ERROR: duplicate key value violates unique constraint \"banners_tags_feature_id_tag_id_key\" (SQLSTATE 23505)"
 	ErrNotFound       = errors.New("no banner with these feature id and tag id")
 	ErrNoRowsAffected = errors.New("no database entries affected by this operation")
 

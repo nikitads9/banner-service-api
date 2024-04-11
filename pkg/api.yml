@@ -274,9 +274,9 @@ components:
           format: int64
           description: Идентификатор фичи
         content:
-          type: object
+          #type: object
           description: Содержимое баннера
-          additionalProperties: true
+          #additionalProperties: true
           example: {"title": "some_title", "text": "some_text", "url": "some_url"}
         is_active:
           type: boolean
@@ -291,8 +291,8 @@ components:
           format: int64
           description: Идентификатор созданного баннера
     GetBannerResponse:
-      type: object
-      additionalProperties: true
+      #type: object
+      #additionalProperties: true
       example: {"title": "some_title", "text": "some_text", "url": "some_url"}
     GetBannersResponse:
       type: array
@@ -321,9 +321,9 @@ components:
             format: int64
             description: Идентификатор фичи
           content:
-            type: object
+            #type: object
             description: Содержимое баннера
-            additionalProperties: true
+            #additionalProperties: true
             example: {"title": "some_title", "text": "some_text", "url": "some_url"}
           is_active:
             type: boolean
@@ -353,9 +353,9 @@ components:
                 description: Идентификатор фичи
               content:
                 nullable: true
-                type: object
+                #type: object
                 description: Содержимое баннера
-                additionalProperties: true
+                #additionalProperties: true
                 example: {"title": "some_title", "text": "some_text", "url": "some_url"}
               is_active:
                 nullable: true

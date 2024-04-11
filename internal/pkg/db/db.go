@@ -26,17 +26,18 @@ type Query struct {
 type db struct {
 	pool *pgxpool.Pool
 }
-type SQLExecer interface {
-	NamedExecer
-	QueryExecer
+type SQLExecutor interface {
+	NamedExecutor
+	QueryExecutor
+	CopyExecutor
 }
 
-type NamedExecer interface {
+type NamedExecutor interface {
 	GetContext(ctx context.Context, dest interface{}, q Query, args ...interface{}) error
 	SelectContext(ctx context.Context, dest interface{}, q Query, args ...interface{}) error
 }
 
-type QueryExecer interface {
+type QueryExecutor interface {
 	ExecContext(ctx context.Context, q Query, args ...interface{}) (pgconn.CommandTag, error)
 	QueryContext(ctx context.Context, q Query, args ...interface{}) (pgx.Rows, error)
 	QueryRowContext(ctx context.Context, q Query, args ...interface{}) pgx.Row
@@ -47,7 +48,7 @@ type Pinger interface {
 }
 
 type DB interface {
-	SQLExecer
+	SQLExecutor
 	Transactor
 	Pinger
 	Close()
@@ -55,6 +56,10 @@ type DB interface {
 
 type Transactor interface {
 	BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
+}
+
+type CopyExecutor interface {
+	CopyFromContext(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
 }
 
 type TxManager interface {
@@ -87,12 +92,38 @@ func (d *db) QueryRowContext(ctx context.Context, q Query, args ...interface{}) 
 	return d.pool.QueryRow(ctx, q.QueryRaw, args...)
 }
 
+// CopyFromContext ..
+func (d *db) CopyFromContext(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error) {
+	tx, ok := ContextTx(ctx)
+	if ok {
+		return tx.CopyFrom(
+			ctx,
+			tableName,
+			columnNames,
+			rowSrc,
+		)
+	}
+
+	return d.pool.CopyFrom(
+		ctx,
+		tableName,
+		columnNames,
+		rowSrc,
+	)
+}
+
 func (d *db) Close() {
 	d.pool.Close()
 }
 
-func GetContextTx(ctx context.Context, tx pgx.Tx) context.Context {
-	return context.WithValue(ctx, TxKey, tx)
+// eject transaction from context
+func ContextTx(ctx context.Context) (pgx.Tx, bool) {
+	tx, ok := ctx.Value(TxKey).(pgx.Tx)
+	if !ok {
+		return nil, false
+	}
+
+	return tx, true
 }
 
 func (d *db) Ping(ctx context.Context) error {

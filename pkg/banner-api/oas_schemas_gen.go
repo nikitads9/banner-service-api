@@ -42,7 +42,7 @@ type CreateBannerRequest struct {
 	// Идентификатор фичи.
 	FeatureID int64 `json:"feature_id"`
 	// Содержимое баннера.
-	Content CreateBannerRequestContent `json:"content"`
+	Content jx.Raw `json:"content"`
 	// Флаг активности баннера.
 	IsActive bool `json:"is_active"`
 }
@@ -58,7 +58,7 @@ func (s *CreateBannerRequest) GetFeatureID() int64 {
 }
 
 // GetContent returns the value of Content.
-func (s *CreateBannerRequest) GetContent() CreateBannerRequestContent {
+func (s *CreateBannerRequest) GetContent() jx.Raw {
 	return s.Content
 }
 
@@ -78,25 +78,13 @@ func (s *CreateBannerRequest) SetFeatureID(val int64) {
 }
 
 // SetContent sets the value of Content.
-func (s *CreateBannerRequest) SetContent(val CreateBannerRequestContent) {
+func (s *CreateBannerRequest) SetContent(val jx.Raw) {
 	s.Content = val
 }
 
 // SetIsActive sets the value of IsActive.
 func (s *CreateBannerRequest) SetIsActive(val bool) {
 	s.IsActive = val
-}
-
-// Содержимое баннера.
-type CreateBannerRequestContent map[string]jx.Raw
-
-func (s *CreateBannerRequestContent) init() CreateBannerRequestContent {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
 }
 
 // Ref: #/components/schemas/CreateBannerResponse
@@ -185,17 +173,7 @@ type GetBannerNotFound struct{}
 
 func (*GetBannerNotFound) getBannerRes() {}
 
-// Ref: #/components/schemas/GetBannerResponse
-type GetBannerResponse map[string]jx.Raw
-
-func (s *GetBannerResponse) init() GetBannerResponse {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
-}
+type GetBannerResponse jx.Raw
 
 func (*GetBannerResponse) getBannerRes() {}
 
@@ -221,7 +199,7 @@ type GetBannersResponseItem struct {
 	// Идентификатор фичи.
 	FeatureID int64 `json:"feature_id"`
 	// Содержимое баннера.
-	Content GetBannersResponseItemContent `json:"content"`
+	Content jx.Raw `json:"content"`
 	// Флаг активности баннера.
 	IsActive bool `json:"is_active"`
 	// Дата создания баннера.
@@ -246,7 +224,7 @@ func (s *GetBannersResponseItem) GetFeatureID() int64 {
 }
 
 // GetContent returns the value of Content.
-func (s *GetBannersResponseItem) GetContent() GetBannersResponseItemContent {
+func (s *GetBannersResponseItem) GetContent() jx.Raw {
 	return s.Content
 }
 
@@ -281,7 +259,7 @@ func (s *GetBannersResponseItem) SetFeatureID(val int64) {
 }
 
 // SetContent sets the value of Content.
-func (s *GetBannersResponseItem) SetContent(val GetBannersResponseItemContent) {
+func (s *GetBannersResponseItem) SetContent(val jx.Raw) {
 	s.Content = val
 }
 
@@ -298,18 +276,6 @@ func (s *GetBannersResponseItem) SetCreatedAt(val time.Time) {
 // SetUpdatedAt sets the value of UpdatedAt.
 func (s *GetBannersResponseItem) SetUpdatedAt(val OptDateTime) {
 	s.UpdatedAt = val
-}
-
-// Содержимое баннера.
-type GetBannersResponseItemContent map[string]jx.Raw
-
-func (s *GetBannersResponseItemContent) init() GetBannersResponseItemContent {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
 }
 
 // GetBannersUnauthorized is response for GetBanners operation.
@@ -644,69 +610,6 @@ func (o OptNilInt64Array) Or(d []int64) []int64 {
 	return d
 }
 
-// NewOptNilSetBannerRequestContent returns new OptNilSetBannerRequestContent with value set to v.
-func NewOptNilSetBannerRequestContent(v SetBannerRequestContent) OptNilSetBannerRequestContent {
-	return OptNilSetBannerRequestContent{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilSetBannerRequestContent is optional nullable SetBannerRequestContent.
-type OptNilSetBannerRequestContent struct {
-	Value SetBannerRequestContent
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilSetBannerRequestContent was set.
-func (o OptNilSetBannerRequestContent) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilSetBannerRequestContent) Reset() {
-	var v SetBannerRequestContent
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilSetBannerRequestContent) SetTo(v SetBannerRequestContent) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsSet returns true if value is Null.
-func (o OptNilSetBannerRequestContent) IsNull() bool { return o.Null }
-
-// SetNull sets value to null.
-func (o *OptNilSetBannerRequestContent) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v SetBannerRequestContent
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilSetBannerRequestContent) Get() (v SetBannerRequestContent, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilSetBannerRequestContent) Or(d SetBannerRequestContent) SetBannerRequestContent {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 type SetBannerBadRequest Error
 
 func (*SetBannerBadRequest) setBannerRes() {}
@@ -737,7 +640,7 @@ type SetBannerRequest struct {
 	// Идентификатор фичи.
 	FeatureID OptNilInt64 `json:"feature_id"`
 	// Содержимое баннера.
-	Content OptNilSetBannerRequestContent `json:"content"`
+	Content jx.Raw `json:"content"`
 	// Флаг активности баннера.
 	IsActive OptNilBool `json:"is_active"`
 }
@@ -753,7 +656,7 @@ func (s *SetBannerRequest) GetFeatureID() OptNilInt64 {
 }
 
 // GetContent returns the value of Content.
-func (s *SetBannerRequest) GetContent() OptNilSetBannerRequestContent {
+func (s *SetBannerRequest) GetContent() jx.Raw {
 	return s.Content
 }
 
@@ -773,25 +676,13 @@ func (s *SetBannerRequest) SetFeatureID(val OptNilInt64) {
 }
 
 // SetContent sets the value of Content.
-func (s *SetBannerRequest) SetContent(val OptNilSetBannerRequestContent) {
+func (s *SetBannerRequest) SetContent(val jx.Raw) {
 	s.Content = val
 }
 
 // SetIsActive sets the value of IsActive.
 func (s *SetBannerRequest) SetIsActive(val OptNilBool) {
 	s.IsActive = val
-}
-
-// Содержимое баннера.
-type SetBannerRequestContent map[string]jx.Raw
-
-func (s *SetBannerRequestContent) init() SetBannerRequestContent {
-	m := *s
-	if m == nil {
-		m = map[string]jx.Raw{}
-		*s = m
-	}
-	return m
 }
 
 // SetBannerUnauthorized is response for SetBanner operation.

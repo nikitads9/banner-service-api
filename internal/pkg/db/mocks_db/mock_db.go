@@ -64,6 +64,21 @@ func (mr *MockDBMockRecorder) Close() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockDB)(nil).Close))
 }
 
+// CopyFromContext mocks base method.
+func (m *MockDB) CopyFromContext(arg0 context.Context, arg1 pgx.Identifier, arg2 []string, arg3 pgx.CopyFromSource) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CopyFromContext", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CopyFromContext indicates an expected call of CopyFromContext.
+func (mr *MockDBMockRecorder) CopyFromContext(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CopyFromContext", reflect.TypeOf((*MockDB)(nil).CopyFromContext), arg0, arg1, arg2, arg3)
+}
+
 // ExecContext mocks base method.
 func (m *MockDB) ExecContext(arg0 context.Context, arg1 db.Query, arg2 ...interface{}) (pgconn.CommandTag, error) {
 	m.ctrl.T.Helper()

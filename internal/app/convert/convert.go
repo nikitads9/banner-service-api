@@ -7,11 +7,11 @@ import (
 	desc "github.com/nikitads9/banner-service-api/pkg/banner-api"
 )
 
-func ToBanner(content []byte, req *desc.CreateBannerRequest) *model.Banner {
+func ToBanner(req *desc.CreateBannerRequest) *model.Banner {
 	return &model.Banner{
 		FeatureID: req.GetFeatureID(),
 		TagIDs:    req.GetTagIds(),
-		Content:   content,
+		Content:   req.GetContent(),
 		IsActive:  req.GetIsActive(),
 	}
 }

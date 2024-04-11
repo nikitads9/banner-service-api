@@ -112,8 +112,10 @@ func (s *CreateBannerRequest) encodeFields(e *jx.Encoder) {
 		e.Int64(s.FeatureID)
 	}
 	{
-		e.FieldStart("content")
-		s.Content.Encode(e)
+		if len(s.Content) != 0 {
+			e.FieldStart("content")
+			e.Raw(s.Content)
+		}
 	}
 	{
 		e.FieldStart("is_active")
@@ -172,7 +174,9 @@ func (s *CreateBannerRequest) Decode(d *jx.Decoder) error {
 		case "content":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				if err := s.Content.Decode(d); err != nil {
+				v, err := d.RawAppend(nil)
+				s.Content = jx.Raw(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -243,64 +247,6 @@ func (s *CreateBannerRequest) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *CreateBannerRequest) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s CreateBannerRequestContent) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields implements json.Marshaler.
-func (s CreateBannerRequestContent) encodeFields(e *jx.Encoder) {
-	for k, elem := range s {
-		e.FieldStart(k)
-
-		if len(elem) != 0 {
-			e.Raw(elem)
-		}
-	}
-}
-
-// Decode decodes CreateBannerRequestContent from json.
-func (s *CreateBannerRequestContent) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode CreateBannerRequestContent to nil")
-	}
-	m := s.init()
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		var elem jx.Raw
-		if err := func() error {
-			v, err := d.RawAppend(nil)
-			elem = jx.Raw(v)
-			if err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return errors.Wrapf(err, "decode field %q", k)
-		}
-		m[string(k)] = elem
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode CreateBannerRequestContent")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s CreateBannerRequestContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *CreateBannerRequestContent) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -649,21 +595,12 @@ func (s *GetBannerInternalServerError) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode implements json.Marshaler.
+// Encode encodes GetBannerResponse as json.
 func (s GetBannerResponse) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
+	unwrapped := jx.Raw(s)
 
-// encodeFields implements json.Marshaler.
-func (s GetBannerResponse) encodeFields(e *jx.Encoder) {
-	for k, elem := range s {
-		e.FieldStart(k)
-
-		if len(elem) != 0 {
-			e.Raw(elem)
-		}
+	if len(unwrapped) != 0 {
+		e.Raw(unwrapped)
 	}
 }
 
@@ -672,25 +609,18 @@ func (s *GetBannerResponse) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode GetBannerResponse to nil")
 	}
-	m := s.init()
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		var elem jx.Raw
-		if err := func() error {
-			v, err := d.RawAppend(nil)
-			elem = jx.Raw(v)
-			if err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return errors.Wrapf(err, "decode field %q", k)
+	var unwrapped jx.Raw
+	if err := func() error {
+		v, err := d.RawAppend(nil)
+		unwrapped = jx.Raw(v)
+		if err != nil {
+			return err
 		}
-		m[string(k)] = elem
 		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode GetBannerResponse")
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
 	}
-
+	*s = GetBannerResponse(unwrapped)
 	return nil
 }
 
@@ -783,8 +713,10 @@ func (s *GetBannersResponseItem) encodeFields(e *jx.Encoder) {
 		e.Int64(s.FeatureID)
 	}
 	{
-		e.FieldStart("content")
-		s.Content.Encode(e)
+		if len(s.Content) != 0 {
+			e.FieldStart("content")
+			e.Raw(s.Content)
+		}
 	}
 	{
 		e.FieldStart("is_active")
@@ -868,7 +800,9 @@ func (s *GetBannersResponseItem) Decode(d *jx.Decoder) error {
 		case "content":
 			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				if err := s.Content.Decode(d); err != nil {
+				v, err := d.RawAppend(nil)
+				s.Content = jx.Raw(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -961,64 +895,6 @@ func (s *GetBannersResponseItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *GetBannersResponseItem) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s GetBannersResponseItemContent) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields implements json.Marshaler.
-func (s GetBannersResponseItemContent) encodeFields(e *jx.Encoder) {
-	for k, elem := range s {
-		e.FieldStart(k)
-
-		if len(elem) != 0 {
-			e.Raw(elem)
-		}
-	}
-}
-
-// Decode decodes GetBannersResponseItemContent from json.
-func (s *GetBannersResponseItemContent) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode GetBannersResponseItemContent to nil")
-	}
-	m := s.init()
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		var elem jx.Raw
-		if err := func() error {
-			v, err := d.RawAppend(nil)
-			elem = jx.Raw(v)
-			if err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return errors.Wrapf(err, "decode field %q", k)
-		}
-		m[string(k)] = elem
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode GetBannersResponseItemContent")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s GetBannersResponseItemContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *GetBannersResponseItemContent) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1223,56 +1099,6 @@ func (s *OptNilInt64Array) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes SetBannerRequestContent as json.
-func (o OptNilSetBannerRequestContent) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	if o.Null {
-		e.Null()
-		return
-	}
-	o.Value.Encode(e)
-}
-
-// Decode decodes SetBannerRequestContent from json.
-func (o *OptNilSetBannerRequestContent) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptNilSetBannerRequestContent to nil")
-	}
-	if d.Next() == jx.Null {
-		if err := d.Null(); err != nil {
-			return err
-		}
-
-		var v SetBannerRequestContent
-		o.Value = v
-		o.Set = true
-		o.Null = true
-		return nil
-	}
-	o.Set = true
-	o.Null = false
-	o.Value = make(SetBannerRequestContent)
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptNilSetBannerRequestContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptNilSetBannerRequestContent) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes SetBannerBadRequest as json.
 func (s *SetBannerBadRequest) Encode(e *jx.Encoder) {
 	unwrapped := (*Error)(s)
@@ -1371,9 +1197,9 @@ func (s *SetBannerRequest) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Content.Set {
+		if len(s.Content) != 0 {
 			e.FieldStart("content")
-			s.Content.Encode(e)
+			e.Raw(s.Content)
 		}
 	}
 	{
@@ -1421,8 +1247,9 @@ func (s *SetBannerRequest) Decode(d *jx.Decoder) error {
 			}
 		case "content":
 			if err := func() error {
-				s.Content.Reset()
-				if err := s.Content.Decode(d); err != nil {
+				v, err := d.RawAppend(nil)
+				s.Content = jx.Raw(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -1459,64 +1286,6 @@ func (s *SetBannerRequest) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *SetBannerRequest) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s SetBannerRequestContent) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields implements json.Marshaler.
-func (s SetBannerRequestContent) encodeFields(e *jx.Encoder) {
-	for k, elem := range s {
-		e.FieldStart(k)
-
-		if len(elem) != 0 {
-			e.Raw(elem)
-		}
-	}
-}
-
-// Decode decodes SetBannerRequestContent from json.
-func (s *SetBannerRequestContent) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode SetBannerRequestContent to nil")
-	}
-	m := s.init()
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		var elem jx.Raw
-		if err := func() error {
-			v, err := d.RawAppend(nil)
-			elem = jx.Raw(v)
-			if err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return errors.Wrapf(err, "decode field %q", k)
-		}
-		m[string(k)] = elem
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode SetBannerRequestContent")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s SetBannerRequestContent) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *SetBannerRequestContent) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

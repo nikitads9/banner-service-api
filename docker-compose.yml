@@ -10,7 +10,7 @@ volumes:
 services:
   # Postgresql database
   db:
-    container_name: booking-storage
+    container_name: banner-storage
     image: postgres:16-alpine3.19
     environment:
       - "POSTGRES_DB=${DB_NAME}"
@@ -30,7 +30,7 @@ services:
 
   # Goose migrations manager
   migrator:
-    container_name: migrator
+    container_name: banner-migrator
     build: 
       context: ./deploy/migrations/
       dockerfile: Dockerfile
