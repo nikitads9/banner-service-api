@@ -11,8 +11,8 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeBannerIDPatchRequest(
-	req *BannerIDPatchReq,
+func encodeCreateBannerRequest(
+	req *CreateBannerRequest,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"
@@ -25,8 +25,8 @@ func encodeBannerIDPatchRequest(
 	return nil
 }
 
-func encodeBannerPostRequest(
-	req *BannerPostReq,
+func encodeSetBannerRequest(
+	req *SetBannerRequest,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

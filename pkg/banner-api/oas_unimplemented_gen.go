@@ -13,48 +13,59 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// BannerGet implements GET /banner operation.
+// CreateBanner implements createBanner operation.
 //
-// Получение всех баннеров c фильтрацией по фиче и/или
-// тегу.
-//
-// GET /banner
-func (UnimplementedHandler) BannerGet(ctx context.Context, params BannerGetParams) (r BannerGetRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BannerIDDelete implements DELETE /banner/{id} operation.
-//
-// Удаление баннера по идентификатору.
-//
-// DELETE /banner/{id}
-func (UnimplementedHandler) BannerIDDelete(ctx context.Context, params BannerIDDeleteParams) (r BannerIDDeleteRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BannerIDPatch implements PATCH /banner/{id} operation.
-//
-// Обновление содержимого баннера.
-//
-// PATCH /banner/{id}
-func (UnimplementedHandler) BannerIDPatch(ctx context.Context, req *BannerIDPatchReq, params BannerIDPatchParams) (r BannerIDPatchRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BannerPost implements POST /banner operation.
-//
-// Создание нового баннера.
+// Создание баннера происходит в транзакции с уровнем
+// изоляции ReadCommitted. Доступно только админам.
 //
 // POST /banner
-func (UnimplementedHandler) BannerPost(ctx context.Context, req *BannerPostReq) (r BannerPostRes, _ error) {
+func (UnimplementedHandler) CreateBanner(ctx context.Context, req *CreateBannerRequest) (r CreateBannerRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UserBannerGet implements GET /user_banner operation.
+// DeleteBanner implements deleteBanner operation.
 //
-// Получение баннера для пользователя.
+// Удаление баннера по его идентификатору. Доступно
+// только админам.
+//
+// DELETE /banner/{id}
+func (UnimplementedHandler) DeleteBanner(ctx context.Context, params DeleteBannerParams) (r DeleteBannerRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetBanner implements getBanner operation.
+//
+// Получение баннера для пользователя в виде чистого JSON,
+// который находится по feature_id и tag_id.  По умолчанию из
+// базы возвращается самая последняя версия.  При
+// использовании флага use_last_revision данные баннера
+// возвращаются из резидентной БД.
 //
 // GET /user_banner
-func (UnimplementedHandler) UserBannerGet(ctx context.Context, params UserBannerGetParams) (r UserBannerGetRes, _ error) {
+func (UnimplementedHandler) GetBanner(ctx context.Context, params GetBannerParams) (r GetBannerRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetBanners implements getBanners operation.
+//
+// Получение данных о баннерах для админов c фильтрацией
+// по фиче и/или тегу и возможностью ограничить
+// количество баннеров.  По умолчанию количество
+// возвращаемых баннеров равняется 1000. Доступно только
+// админам.
+//
+// GET /banner
+func (UnimplementedHandler) GetBanners(ctx context.Context, params GetBannersParams) (r GetBannersRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// SetBanner implements setBanner operation.
+//
+// Обновление баннера, поля тела запроса опциональны.
+// При обновлении создается новая версия и изменяются
+// прежние. Доступно только админам.
+//
+// PATCH /banner/{id}
+func (UnimplementedHandler) SetBanner(ctx context.Context, req *SetBannerRequest, params SetBannerParams) (r SetBannerRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

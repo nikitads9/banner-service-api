@@ -15,8 +15,8 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s *Server) decodeBannerIDPatchRequest(r *http.Request) (
-	req *BannerIDPatchReq,
+func (s *Server) decodeCreateBannerRequest(r *http.Request) (
+	req *CreateBannerRequest,
 	close func() error,
 	rerr error,
 ) {
@@ -55,7 +55,7 @@ func (s *Server) decodeBannerIDPatchRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request BannerIDPatchReq
+		var request CreateBannerRequest
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err
@@ -86,8 +86,8 @@ func (s *Server) decodeBannerIDPatchRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodeBannerPostRequest(r *http.Request) (
-	req *BannerPostReq,
+func (s *Server) decodeSetBannerRequest(r *http.Request) (
+	req *SetBannerRequest,
 	close func() error,
 	rerr error,
 ) {
@@ -126,7 +126,7 @@ func (s *Server) decodeBannerPostRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request BannerPostReq
+		var request SetBannerRequest
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err
@@ -142,6 +142,14 @@ func (s *Server) decodeBannerPostRequest(r *http.Request) (
 				Err:         err,
 			}
 			return req, close, err
+		}
+		if err := func() error {
+			if err := request.Validate(); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return req, close, errors.Wrap(err, "validate")
 		}
 		return &request, close, nil
 	default:

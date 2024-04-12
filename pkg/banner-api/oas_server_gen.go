@@ -8,37 +8,48 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// BannerGet implements GET /banner operation.
+	// CreateBanner implements createBanner operation.
 	//
-	// Получение всех баннеров c фильтрацией по фиче и/или
-	// тегу.
-	//
-	// GET /banner
-	BannerGet(ctx context.Context, params BannerGetParams) (BannerGetRes, error)
-	// BannerIDDelete implements DELETE /banner/{id} operation.
-	//
-	// Удаление баннера по идентификатору.
-	//
-	// DELETE /banner/{id}
-	BannerIDDelete(ctx context.Context, params BannerIDDeleteParams) (BannerIDDeleteRes, error)
-	// BannerIDPatch implements PATCH /banner/{id} operation.
-	//
-	// Обновление содержимого баннера.
-	//
-	// PATCH /banner/{id}
-	BannerIDPatch(ctx context.Context, req *BannerIDPatchReq, params BannerIDPatchParams) (BannerIDPatchRes, error)
-	// BannerPost implements POST /banner operation.
-	//
-	// Создание нового баннера.
+	// Создание баннера происходит в транзакции с уровнем
+	// изоляции ReadCommitted. Доступно только админам.
 	//
 	// POST /banner
-	BannerPost(ctx context.Context, req *BannerPostReq) (BannerPostRes, error)
-	// UserBannerGet implements GET /user_banner operation.
+	CreateBanner(ctx context.Context, req *CreateBannerRequest) (CreateBannerRes, error)
+	// DeleteBanner implements deleteBanner operation.
 	//
-	// Получение баннера для пользователя.
+	// Удаление баннера по его идентификатору. Доступно
+	// только админам.
+	//
+	// DELETE /banner/{id}
+	DeleteBanner(ctx context.Context, params DeleteBannerParams) (DeleteBannerRes, error)
+	// GetBanner implements getBanner operation.
+	//
+	// Получение баннера для пользователя в виде чистого JSON,
+	// который находится по feature_id и tag_id.  По умолчанию из
+	// базы возвращается самая последняя версия.  При
+	// использовании флага use_last_revision данные баннера
+	// возвращаются из резидентной БД.
 	//
 	// GET /user_banner
-	UserBannerGet(ctx context.Context, params UserBannerGetParams) (UserBannerGetRes, error)
+	GetBanner(ctx context.Context, params GetBannerParams) (GetBannerRes, error)
+	// GetBanners implements getBanners operation.
+	//
+	// Получение данных о баннерах для админов c фильтрацией
+	// по фиче и/или тегу и возможностью ограничить
+	// количество баннеров.  По умолчанию количество
+	// возвращаемых баннеров равняется 1000. Доступно только
+	// админам.
+	//
+	// GET /banner
+	GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error)
+	// SetBanner implements setBanner operation.
+	//
+	// Обновление баннера, поля тела запроса опциональны.
+	// При обновлении создается новая версия и изменяются
+	// прежние. Доступно только админам.
+	//
+	// PATCH /banner/{id}
+	SetBanner(ctx context.Context, req *SetBannerRequest, params SetBannerParams) (SetBannerRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
