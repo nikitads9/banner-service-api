@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner"
-	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	"github.com/nikitads9/banner-service-api/internal/pkg/db/pg"
 
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -25,11 +25,11 @@ var (
 )
 
 type repository struct {
-	client db.Client
+	client pg.Client
 	log    *slog.Logger
 }
 
-func NewBannerRepository(client db.Client, log *slog.Logger) banner.Repository {
+func NewBannerRepository(client pg.Client, log *slog.Logger) banner.Repository {
 	return &repository{
 		client: client,
 		log:    log,

@@ -57,6 +57,8 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 		return 0, ErrPgxScan
 	}
 
+	row.Close()
+
 	err = r.LinkBannerTags(ctx, id, banner.FeatureID, banner.TagIDs)
 	if err != nil {
 		if strings.EqualFold(err.Error(), ErrDuplicate) {

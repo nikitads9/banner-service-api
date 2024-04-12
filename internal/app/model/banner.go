@@ -28,7 +28,7 @@ type SetBannerInfo struct {
 	BannerID  int64
 	FeatureID sql.NullInt64
 	TagIDs    []int64
-	Content   []byte
+	Content   NullJxRaw
 	IsActive  sql.NullBool
 }
 
@@ -37,4 +37,9 @@ type GetBannersParams struct {
 	TagID     sql.NullInt64
 	Limit     int64
 	Offset    int64
+}
+
+type NullJxRaw struct {
+	JxRaw jx.Raw
+	Valid bool
 }

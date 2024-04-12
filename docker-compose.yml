@@ -27,7 +27,7 @@ services:
     command: -p ${DB_PORT}
     networks:
       - app_net
-  # Booking service
+  # Banner service
   banners:
     container_name: banner-app
     build:
@@ -53,7 +53,7 @@ services:
       context: ./deploy/migrations/
       dockerfile: Dockerfile
     restart: on-failure
-    image: nikitads9/booking-schedule:migrator
+    image: nikitads9/banner-service:migrator
     environment:
       - 'GOOSE_DRIVER=postgres'
       - 'DB_HOST=${DB_HOST}'

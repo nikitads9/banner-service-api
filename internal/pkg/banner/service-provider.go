@@ -14,7 +14,7 @@ import (
 	"github.com/nikitads9/banner-service-api/internal/config"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
-	"github.com/nikitads9/banner-service-api/internal/pkg/db/transaction"
+	"github.com/nikitads9/banner-service-api/internal/pkg/db/pg"
 )
 
 const (
@@ -28,7 +28,7 @@ type serviceProvider struct {
 	configType string
 	config     *config.BannerConfig
 
-	db        db.Client
+	db        pg.Client
 	txManager db.TxManager
 
 	log *slog.Logger
@@ -46,13 +46,13 @@ func newServiceProvider(configType string, configPath string) *serviceProvider {
 	}
 }
 
-func (s *serviceProvider) GetDB(ctx context.Context) db.Client {
+func (s *serviceProvider) GetDB(ctx context.Context) pg.Client {
 	if s.db == nil {
 		cfg, err := s.GetConfig().GetDBConfig()
 		if err != nil {
 			s.log.Error("could not get db config: %s", sl.Err(err))
 		}
-		dbc, err := db.NewClient(ctx, cfg)
+		dbc, err := pg.NewClient(ctx, s.GetLogger(), cfg)
 		if err != nil {
 			s.log.Error("coud not connect to db: %s", sl.Err(err))
 		}
@@ -128,7 +128,7 @@ func (s *serviceProvider) GetLogger() *slog.Logger {
 
 func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
 	if s.txManager == nil {
-		s.txManager = transaction.NewTransactionManager(s.GetDB(ctx).DB())
+		s.txManager = pg.NewTransactionManager(s.GetDB(ctx).DB())
 	}
 
 	return s.txManager
