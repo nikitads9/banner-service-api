@@ -15,10 +15,10 @@ type Banner struct {
 }
 
 type BannerInfo struct {
-	BannerID  int64        `db:"id"`
+	BannerID  int64        `db:"banner_id"`
 	FeatureID int64        `db:"feature_id"`
-	TagIDs    []int64      `db:"tag_id"`
-	Content   jx.Raw       `db:"content"`
+	TagIDs    []int64      `db:"tag_ids"`
+	Content   []byte       `db:"content"`
 	IsActive  bool         `db:"is_active"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 	CreatedAt time.Time    `db:"created_at"`

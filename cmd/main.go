@@ -16,7 +16,7 @@ var configType, pathConfig string
 
 func init() {
 	flag.StringVar(&configType, "configtype", "file", "type of configuration: environment variables (env) or env/yaml file (file)")
-	flag.StringVar(&pathConfig, "config", "./configs/banners_config.yml", "path to config file")
+	flag.StringVar(&pathConfig, "config", "C:\\Users\\swnik\\Desktop\\projects\\banner-service-api\\configs\\banners_config.yml", "path to config file")
 	time.Local = time.UTC
 }
 

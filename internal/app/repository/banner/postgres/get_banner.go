@@ -14,7 +14,7 @@ import (
 )
 
 func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64) (jx.Raw, error) {
-	const op = "banner.postgres.GetBooking"
+	const op = "banner.postgres.GetBanner"
 
 	log := r.log.With(
 		slog.String("op", op),
