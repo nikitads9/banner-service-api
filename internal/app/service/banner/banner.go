@@ -10,9 +10,9 @@ import (
 
 type Service struct {
 	postgresRepository banner.Repository
-	redisRepository    banner.Repository
-	log                *slog.Logger
-	txManager          db.TxManager
+	//redisRepository    banner.Repository
+	log       *slog.Logger
+	txManager db.TxManager
 }
 
 var (
