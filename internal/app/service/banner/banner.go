@@ -6,8 +6,6 @@ import (
 
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Service struct {
@@ -19,7 +17,6 @@ type Service struct {
 
 var (
 	ErrNoConnection = errors.New("can't begin transaction, no connection to database")
-	pgNoConnection  = new(*pgconn.ConnectError)
 )
 
 func NewBannerService(bannerRepository banner.Repository, log *slog.Logger, txManager db.TxManager) *Service {
@@ -28,4 +25,15 @@ func NewBannerService(bannerRepository banner.Repository, log *slog.Logger, txMa
 		log:                log,
 		txManager:          txManager,
 	}
+}
+
+func NewMockBannerService(deps ...interface{}) *Service {
+	is := Service{}
+	for _, val := range deps {
+		switch s := val.(type) {
+		case banner.Repository:
+			is.postgresRepository = s
+		}
+	}
+	return &is
 }

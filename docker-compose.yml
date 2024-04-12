@@ -27,6 +27,24 @@ services:
     command: -p ${DB_PORT}
     networks:
       - app_net
+  # Booking service
+  banners:
+    container_name: banner-app
+    build:
+      context: .
+      dockerfile: ./deploy/banner/Dockerfile
+    image: nikitads9/banner-service-api:app
+    ports:
+      - "${BANNERS_PORT}:${BANNERS_PORT}"
+    depends_on:
+      - db
+    networks:
+      - app_net
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+          cpus: "0.70"
 
   # Goose migrations manager
   migrator:

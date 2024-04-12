@@ -12,7 +12,7 @@ import (
 type BannerServer struct {
 	Host        string        `yaml:"host" env:"BANNERS_HOST" env-default:"0.0.0.0"`
 	Port        string        `yaml:"port" env:"BANNERS_PORT" env-default:"3000"`
-	Timeout     time.Duration `yaml:"timeout" env:"BANNERSS_TIMEOUT" env-default:"6s"`
+	Timeout     time.Duration `yaml:"timeout" env:"BANNERS_TIMEOUT" env-default:"6s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env:"BANNERS_IDLE_TIMEOUT" env-default:"30s"`
 }
 
@@ -32,7 +32,7 @@ type JWT struct {
 }
 
 type BannerConfig struct {
-	Env      string       `yaml:"env" env:"env" env-default:"dev"`
+	Env      string       `yaml:"env" env:"ENV" env-default:"dev"`
 	Server   BannerServer `yaml:"server"`
 	Database Database     `yaml:"database"`
 	Jwt      JWT          `yaml:"jwt"`
