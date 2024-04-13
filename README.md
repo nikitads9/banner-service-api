@@ -26,10 +26,8 @@ Avito backend task 2024.
 - Для удобного развертывания были написаны скрипты `Makefile`, позволяющие накатывать и откатывать миграции, собирать бинарники, производить тестирование и генерировать моки (`mockgen`) и серверный код (`ogen-go`).
 - Линтер-проверки, проверка на прохождение тестов и проверка на build выполнены в `Github Actions` с помощью пайплайнов build и linter.
 <br /> <br /> <br />
-<picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nikitads9/banner-service-api/assets/project-design-dark.png">
-    <img alt="project design" src="https://github.com/nikitads9/banner-service-api/assets/project-design-dark.png">
-</picture>
+  ![project design](assets/project-design-dark.png#gh-dark-mode-only)
+  ![project design](assets/project-design-light.png#gh-light-mode-only)
 
 ## Пункты задания
 
