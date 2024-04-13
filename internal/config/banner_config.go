@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/exaring/otelpgx"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,11 +32,25 @@ type JWT struct {
 	Expiration time.Duration `yaml:"expiration" env:"JWT_EXPIRATION" env-default:"2160h"`
 }
 
+type Redis struct {
+	User     string `yaml:"user" env:"REDIS_USER" env-default:"banners"`
+	Password string `yaml:"password" env:"REDIS_PASS" env-default:"banners_pass"`
+	Host     string `yaml:"host" env:"REDIS_HOST" env-default:"redis"`
+	Port     string `yaml:"port" env:"REDIS_PORT" env-default:"5679"`
+}
+
+type Tracer struct {
+	EndpointURL  string  `yaml:"endpoint_url" env:"TRACER_URL" env-default:"http://otelcol:4318"`
+	SamplingRate float64 `yaml:"sampling_rate" env:"TRACER_SAMPLING_RATE" env-default:"1.0"`
+}
+
 type BannerConfig struct {
 	Env      string       `yaml:"env" env:"ENV" env-default:"dev"`
 	Server   BannerServer `yaml:"server"`
 	Database Database     `yaml:"database"`
 	Jwt      JWT          `yaml:"jwt"`
+	Redis    Redis        `yaml:"redis"`
+	Tracer   Tracer       `yaml:"tracer"`
 }
 
 func ReadBannerConfigFile(path string) (*BannerConfig, error) {
@@ -75,6 +90,16 @@ func (b *BannerConfig) GetEnv() string {
 	return b.Env
 }
 
+// GetTracerConfig
+func (b *BannerConfig) GetTracerConfig() *Tracer {
+	return &b.Tracer
+}
+
+// GetRedisConfig
+func (b *BannerConfig) GetRedisConfig() *Redis {
+	return &b.Redis
+}
+
 func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 	dbDsn := fmt.Sprintf("user=%s dbname=%s password=%s host=%s port=%s sslmode=%s", b.Database.User, b.Database.Name, b.Database.Password, b.Database.Host, b.Database.Port, b.Database.Ssl)
 
@@ -83,14 +108,15 @@ func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 		return nil, err
 	}
 
+	poolConfig.ConnConfig.Tracer = otelpgx.NewTracer(otelpgx.WithTrimSQLInSpanName())
 	poolConfig.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 	poolConfig.MaxConns = b.Database.MaxOpenedConnections
 
 	return poolConfig, nil
 }
 
-func (c *BannerConfig) GetAddress() (string, error) {
-	address := c.GetServerConfig().Host + ":" + c.GetServerConfig().Port
+func (c *BannerConfig) GetAddress(host string, port string) string {
+	address := host + ":" + port
 	//TODO: regex check
-	return address, nil
+	return address
 }

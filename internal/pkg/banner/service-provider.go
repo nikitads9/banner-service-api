@@ -7,14 +7,19 @@ import (
 	"os"
 
 	bannerRepository "github.com/nikitads9/banner-service-api/internal/app/repository/banner"
+	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/cache"
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/postgres"
 	bannerService "github.com/nikitads9/banner-service-api/internal/app/service/banner"
 	"github.com/nikitads9/banner-service-api/internal/app/service/jwt"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/nikitads9/banner-service-api/internal/config"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
-	"github.com/nikitads9/banner-service-api/internal/pkg/db/transaction"
+	"github.com/nikitads9/banner-service-api/internal/pkg/db/pg"
+	rediska "github.com/nikitads9/banner-service-api/internal/pkg/db/redis"
+	"github.com/nikitads9/banner-service-api/internal/pkg/observability"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -28,12 +33,15 @@ type serviceProvider struct {
 	configType string
 	config     *config.BannerConfig
 
-	db        db.Client
+	db        pg.Client
+	redis     *redis.Client
 	txManager db.TxManager
 
-	log *slog.Logger
+	tracer trace.Tracer
+	log    *slog.Logger
 
 	postgresRepository bannerRepository.Repository
+	bannerCache        bannerRepository.Cache
 	bannerService      *bannerService.Service
 
 	jwtService jwt.Service
@@ -46,13 +54,13 @@ func newServiceProvider(configType string, configPath string) *serviceProvider {
 	}
 }
 
-func (s *serviceProvider) GetDB(ctx context.Context) db.Client {
+func (s *serviceProvider) GetDB(ctx context.Context) pg.Client {
 	if s.db == nil {
 		cfg, err := s.GetConfig().GetDBConfig()
 		if err != nil {
 			s.log.Error("could not get db config: %s", sl.Err(err))
 		}
-		dbc, err := db.NewClient(ctx, cfg)
+		dbc, err := pg.NewClient(ctx, s.GetLogger(), cfg)
 		if err != nil {
 			s.log.Error("coud not connect to db: %s", sl.Err(err))
 		}
@@ -60,6 +68,14 @@ func (s *serviceProvider) GetDB(ctx context.Context) db.Client {
 	}
 
 	return s.db
+}
+
+func (s *serviceProvider) GetRedisClient() *redis.Client {
+	if s.redis == nil {
+		s.redis = rediska.GetClient(s.GetConfig().GetAddress(s.GetConfig().GetRedisConfig().Host, s.GetConfig().GetRedisConfig().Port), s.GetConfig().GetRedisConfig().Password)
+	}
+
+	return s.redis
 }
 
 func (s *serviceProvider) GetConfig() *config.BannerConfig {
@@ -84,17 +100,26 @@ func (s *serviceProvider) GetConfig() *config.BannerConfig {
 
 func (s *serviceProvider) GetPostgresRepository(ctx context.Context) bannerRepository.Repository {
 	if s.postgresRepository == nil {
-		s.postgresRepository = postgres.NewBannerRepository(s.GetDB(ctx), s.GetLogger())
+		s.postgresRepository = postgres.NewBannerRepository(s.GetDB(ctx), s.GetTracer(ctx), s.GetLogger())
 		return s.postgresRepository
 	}
 
 	return s.postgresRepository
 }
 
+func (s *serviceProvider) GetBannerCache(ctx context.Context) bannerRepository.Cache {
+	if s.bannerCache == nil {
+		s.bannerCache = cache.NewBannerCache(s.GetRedisClient(), s.GetTracer(ctx), s.GetLogger())
+	}
+
+	return s.bannerCache
+}
+
 func (s *serviceProvider) GetBannerService(ctx context.Context) *bannerService.Service {
 	if s.bannerService == nil {
 		bannerRepository := s.GetPostgresRepository(ctx)
-		s.bannerService = bannerService.NewBannerService(bannerRepository, s.GetLogger(), s.TxManager(ctx))
+		bannerCache := s.GetBannerCache(ctx)
+		s.bannerService = bannerService.NewBannerService(bannerRepository, bannerCache, s.GetTracer(ctx), s.GetLogger(), s.TxManager(ctx))
 	}
 
 	return s.bannerService
@@ -126,9 +151,24 @@ func (s *serviceProvider) GetLogger() *slog.Logger {
 	return s.log
 }
 
+func (s *serviceProvider) GetTracer(ctx context.Context) trace.Tracer {
+	if s.tracer == nil {
+		tracer, err := observability.NewTracer(ctx, s.GetConfig().GetTracerConfig().EndpointURL, "banners", s.GetConfig().GetTracerConfig().SamplingRate)
+		if err != nil {
+			s.GetLogger().Error("failed to create tracer: ", sl.Err(err))
+			return nil
+		}
+
+		s.tracer = tracer
+
+	}
+
+	return s.tracer
+}
+
 func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
 	if s.txManager == nil {
-		s.txManager = transaction.NewTransactionManager(s.GetDB(ctx).DB())
+		s.txManager = pg.NewTransactionManager(s.GetDB(ctx).DB())
 	}
 
 	return s.txManager

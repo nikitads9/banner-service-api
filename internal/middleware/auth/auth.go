@@ -44,7 +44,6 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 
 	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "AdminToken ") {
 		log.Error("missing token ", sl.Err(errMissingToken))
-		//api.WriteWithError(w, http.StatusUnauthorized, errMissingToken.Error())
 		return ctx, errMissingToken
 	}
 
@@ -52,7 +51,6 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 	scope, err := s.jwtService.VerifyToken(ctx, token)
 	if err != nil {
 		log.Error("issue verifying jwt token", sl.Err(err))
-		//api.WriteWithError(w, http.StatusUnauthorized, errInvalidToken.Error())
 		return ctx, err
 	}
 

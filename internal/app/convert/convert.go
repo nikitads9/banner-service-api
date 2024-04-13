@@ -41,37 +41,30 @@ func ToGetBannersResponse(mod []*model.BannerInfo) []desc.GetBannersResponseItem
 	return res
 }
 
-func ToSetBannerInfo(bannerID int64, content []byte, req *desc.SetBannerRequest) *model.SetBannerInfo {
+func ToSetBannerInfo(bannerID int64, req *desc.SetBannerRequest) *model.SetBannerInfo {
 	res := &model.SetBannerInfo{
 		BannerID: bannerID,
 	}
 
-	if featureID, ok := req.GetFeatureID().Get(); ok {
-		res.FeatureID = sql.NullInt64{
-			Int64: featureID,
-			Valid: true,
-		}
+	featureID, ok := req.GetFeatureID().Get()
+	res.FeatureID = sql.NullInt64{
+		Int64: featureID,
+		Valid: ok,
 	}
 
-	if tagIDs, ok := req.GetTagIds().Get(); ok {
-		if len(tagIDs) > 0 {
-			res.TagIDs = tagIDs
-		}
-
+	tagIDs, ok := req.GetTagIds().Get()
+	if ok && len(tagIDs) > 0 {
+		res.TagIDs = tagIDs
 	}
 
-	if content != nil {
-		if len(content) > 0 {
-			res.Content = content
-		}
+	//TODO: check
+	res.Content = model.NullJxRaw{JxRaw: req.GetContent(),
+		Valid: len(req.GetContent().String()) != 0}
 
-	}
-
-	if isActive, ok := req.GetIsActive().Get(); ok {
-		res.IsActive = sql.NullBool{
-			Bool:  isActive,
-			Valid: true,
-		}
+	isActive, ok := req.GetIsActive().Get()
+	res.IsActive = sql.NullBool{
+		Bool:  isActive,
+		Valid: ok,
 	}
 
 	return res

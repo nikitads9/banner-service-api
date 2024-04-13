@@ -1,11 +1,10 @@
-package transaction
+package pg
 
 import (
 	"context"
 
-	"github.com/nikitads9/banner-service-api/internal/pkg/db"
-
 	pgx "github.com/jackc/pgx/v5"
+	"github.com/nikitads9/banner-service-api/internal/pkg/db"
 	"github.com/pkg/errors"
 )
 
@@ -19,13 +18,9 @@ func NewTransactionManager(db db.Transactor) db.TxManager {
 	}
 }
 
-func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
-	return context.WithValue(ctx, db.TxKey, tx)
-}
-
 func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn db.Handler) (err error) {
 	// Если это вложенная транзакция, пропускаем инициацию новой транзакции и выполняем обработчик.
-	tx, ok := ctx.Value(db.TxKey).(pgx.Tx)
+	tx, ok := ContextTx(ctx)
 	if ok {
 		return fn(ctx)
 	}

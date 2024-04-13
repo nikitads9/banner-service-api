@@ -1,5 +1,5 @@
 include .env
-BIN_SERVER := "./bin/server"
+BIN_SERVER := "./bin/banners"
 BIN_CLIENT := "./bin/client"
 
 #GIT_HASH := $(shell git log --format="%h" -n 1)
@@ -24,7 +24,7 @@ install-go-deps: .install-go-deps
 		go mod tidy
 
 .PHONY: generate
-generate: generate-server generate mocks
+generate: generate-server generate-mocks
 generate-server:
 	go generate ./pkg
 generate-mocks:

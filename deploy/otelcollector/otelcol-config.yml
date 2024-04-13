@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  prometheus/traces:
+    endpoint: 0.0.0.0:8889 # metrics got from spans
+  otlp/jaeger: 
+    endpoint: http://jaeger:4317
+    tls:
+      insecure: true
+  logging:
+    verbosity: detailed
+
+processors:
+  batch:
+
+connectors:
+  spanmetrics:
+    histogram:
+      explicit:
+        buckets: [0ms, 1ms, 2ms, 3ms, 4ms, 5ms, 8ms, 10ms, 14ms, 20ms, 25ms, 30ms, 35ms, 40ms, 50ms, 75ms, 100ms, 125ms, 150ms, 175ms, 200ms, 300ms, 500ms, 1s, 1.2s, 1.3s, 1.4s, 1.5s, 1.6s, 2s, 2.2s, 2.3s, 2.5s, 3s, 4s, 5s, 6s, 7s, 8s, 10s]
+    dimensions_cache_size: 100000
+    aggregation_temporality: AGGREGATION_TEMPORALITY_CUMULATIVE
+    dimensions:
+      - name: http.method
+      
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger,spanmetrics]
+    metrics/traces:
+      receivers: [otlp,spanmetrics]
+      processors: []
+      exporters: [prometheus/traces] 

@@ -9,6 +9,7 @@ import (
 	"github.com/nikitads9/banner-service-api/internal/app/model"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	"go.opentelemetry.io/otel/codes"
 )
 
 func (r *repository) GetBanners(ctx context.Context, mod *model.GetBannersParams) ([]*model.BannerInfo, error) {
@@ -17,6 +18,10 @@ func (r *repository) GetBanners(ctx context.Context, mod *model.GetBannersParams
 	log := r.log.With(
 		slog.String("op", op),
 	)
+
+	ctx, span := r.tracer.Start(ctx, op)
+	defer span.End()
+
 	query := `SELECT banner_id, feature_id, array_agg(tag_id) as tag_ids, content, is_active, updated_at, created_at 
 		FROM banners_tags 
 		JOIN banners 
@@ -40,6 +45,9 @@ func (r *repository) GetBanners(ctx context.Context, mod *model.GetBannersParams
 	var banners []*model.BannerInfo
 	err := r.client.DB().SelectContext(ctx, &banners, q, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
 			return nil, ErrNoConnection

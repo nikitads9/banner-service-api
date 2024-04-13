@@ -18,3 +18,13 @@ database:
 jwt:
   secret: "verysecretivejwt"
   expiration: 2160h
+
+redis:
+  user: ""
+  password: ""
+  host: "redis"
+  port: "6379"
+
+tracer:
+  endpoint_url: "http://otelcol:4318"
+  sampling_rate: 1.0
