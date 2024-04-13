@@ -6,7 +6,9 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/go-redis/redis"
 	bannerRepository "github.com/nikitads9/banner-service-api/internal/app/repository/banner"
+	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/cache"
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/postgres"
 	bannerService "github.com/nikitads9/banner-service-api/internal/app/service/banner"
 	"github.com/nikitads9/banner-service-api/internal/app/service/jwt"
@@ -15,6 +17,7 @@ import (
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db/pg"
+	rediska "github.com/nikitads9/banner-service-api/internal/pkg/db/redis"
 )
 
 const (
@@ -29,11 +32,13 @@ type serviceProvider struct {
 	config     *config.BannerConfig
 
 	db        pg.Client
+	redis     *redis.Client
 	txManager db.TxManager
 
 	log *slog.Logger
 
 	postgresRepository bannerRepository.Repository
+	bannerCache        bannerRepository.Cache
 	bannerService      *bannerService.Service
 
 	jwtService jwt.Service
@@ -60,6 +65,14 @@ func (s *serviceProvider) GetDB(ctx context.Context) pg.Client {
 	}
 
 	return s.db
+}
+
+func (s *serviceProvider) GetRedisClient() *redis.Client {
+	if s.redis == nil {
+		s.redis = rediska.GetClient(s.GetConfig().GetAddress(s.GetConfig().GetRedisConfig().Host, s.GetConfig().GetRedisConfig().Port), s.GetConfig().GetRedisConfig().Password)
+	}
+
+	return s.redis
 }
 
 func (s *serviceProvider) GetConfig() *config.BannerConfig {
@@ -91,10 +104,19 @@ func (s *serviceProvider) GetPostgresRepository(ctx context.Context) bannerRepos
 	return s.postgresRepository
 }
 
+func (s *serviceProvider) GetBannerCache() bannerRepository.Cache {
+	if s.bannerCache == nil {
+		s.bannerCache = cache.NewBannerCache(s.GetRedisClient(), s.GetLogger())
+	}
+
+	return s.bannerCache
+}
+
 func (s *serviceProvider) GetBannerService(ctx context.Context) *bannerService.Service {
 	if s.bannerService == nil {
 		bannerRepository := s.GetPostgresRepository(ctx)
-		s.bannerService = bannerService.NewBannerService(bannerRepository, s.GetLogger(), s.TxManager(ctx))
+		bannerCache := s.GetBannerCache()
+		s.bannerService = bannerService.NewBannerService(bannerRepository, bannerCache, s.GetLogger(), s.TxManager(ctx))
 	}
 
 	return s.bannerService

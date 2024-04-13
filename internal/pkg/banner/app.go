@@ -85,11 +85,7 @@ func (a *App) initServer(ctx context.Context) error {
 		return err
 	}
 
-	address, err := a.serviceProvider.GetConfig().GetAddress()
-	if err != nil {
-		a.serviceProvider.GetLogger().Error("could not get server address: %s", err)
-		return nil
-	}
+	address := a.serviceProvider.GetConfig().GetAddress(a.serviceProvider.GetConfig().Server.Host, a.serviceProvider.GetConfig().Server.Port)
 
 	routeFinder := logger.MakeRouteFinder(srv)
 	a.server = &http.Server{

@@ -22,11 +22,22 @@ services:
     #  - ./deploy/database/init.sql:/docker-entrypoint-initdb.d/init.sql 
     ports:
       - "${DB_PORT}:${DB_PORT}"
-    expose:
-    - "${DB_PORT}" 
+    #expose:
+    #- "${DB_PORT}" 
     command: -p ${DB_PORT}
     networks:
       - app_net
+  # redis kv database
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: unless-stopped
+    #environment:
+    #  REDIS_ARGS: "--requirepass ${REDIS_PASS} --user ${REDIS_USER} on >password ~* allcommands --user default off nopass nocommands"
+    ports:
+    - ${REDIS_PORT}:${REDIS_PORT}
+    networks:
+    - app_net
   # Banner service
   banners:
     container_name: banner-app

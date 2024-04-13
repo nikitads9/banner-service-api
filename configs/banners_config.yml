@@ -18,3 +18,9 @@ database:
 jwt:
   secret: "verysecretivejwt"
   expiration: 2160h
+
+redis:
+  user: ""
+  password: ""
+  host: "redis"
+  port: "5679"

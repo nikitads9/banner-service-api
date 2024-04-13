@@ -10,18 +10,19 @@ import (
 
 type Service struct {
 	postgresRepository banner.Repository
-	//redisRepository    banner.Repository
-	log       *slog.Logger
-	txManager db.TxManager
+	bannerCache        banner.Cache
+	log                *slog.Logger
+	txManager          db.TxManager
 }
 
 var (
 	ErrNoConnection = errors.New("can't begin transaction, no connection to database")
 )
 
-func NewBannerService(bannerRepository banner.Repository, log *slog.Logger, txManager db.TxManager) *Service {
+func NewBannerService(bannerRepository banner.Repository, bannerCache banner.Cache, log *slog.Logger, txManager db.TxManager) *Service {
 	return &Service{
 		postgresRepository: bannerRepository,
+		bannerCache:        bannerCache,
 		log:                log,
 		txManager:          txManager,
 	}
