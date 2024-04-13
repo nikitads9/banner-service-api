@@ -9,5 +9,5 @@ import (
 
 type Cache interface {
 	Get(ctx context.Context, key string) (jx.Raw, error)
-	Set(ctx context.Context, key string, content jx.Raw, ttl time.Duration) error
+	Set(ctx context.Context, key string, content []byte, ttl time.Duration) error
 }

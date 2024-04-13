@@ -23,4 +23,4 @@ redis:
   user: ""
   password: ""
   host: "redis"
-  port: "5679"
+  port: "6379"

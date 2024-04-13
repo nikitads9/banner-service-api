@@ -6,12 +6,12 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/go-redis/redis"
 	bannerRepository "github.com/nikitads9/banner-service-api/internal/app/repository/banner"
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/cache"
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner/postgres"
 	bannerService "github.com/nikitads9/banner-service-api/internal/app/service/banner"
 	"github.com/nikitads9/banner-service-api/internal/app/service/jwt"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/nikitads9/banner-service-api/internal/config"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"

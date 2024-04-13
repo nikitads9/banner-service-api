@@ -1,5 +1,5 @@
 include .env
-BIN_SERVER := "./bin/server"
+BIN_SERVER := "./bin/banners"
 BIN_CLIENT := "./bin/client"
 
 #GIT_HASH := $(shell git log --format="%h" -n 1)
