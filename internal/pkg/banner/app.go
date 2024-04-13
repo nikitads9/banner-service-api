@@ -78,8 +78,9 @@ func (a *App) Run() error {
 }
 
 func (a *App) initServer(ctx context.Context) error {
+	tracer := a.serviceProvider.GetTracer(ctx)
 	bannerService := a.serviceProvider.GetBannerService(ctx)
-	a.bannerImpl = api.NewImplementation(bannerService)
+	a.bannerImpl = api.NewImplementation(bannerService, tracer)
 	srv, err := desc.NewServer(a.bannerImpl, auth.NewSecurity(a.serviceProvider.GetLogger(), a.serviceProvider.GetJWTService(ctx)))
 	if err != nil {
 		return err

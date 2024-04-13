@@ -13,6 +13,7 @@ import (
 	t "github.com/nikitads9/banner-service-api/internal/app/repository/banner/table"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	"go.opentelemetry.io/otel/codes"
 )
 
 func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (int64, error) {
@@ -22,12 +23,17 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 		slog.String("op", op),
 	)
 
+	ctx, span := r.tracer.Start(ctx, op)
+	defer span.End()
+
 	builder := sq.Insert(t.BannerTable).
 		Columns(t.Content, t.IsActive, t.CreatedAt).
 		Values(banner.Content, banner.IsActive, time.Now())
 
 	query, args, err := builder.PlaceholderFormat(sq.Dollar).Suffix("returning id").ToSql()
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
 		return 0, ErrQueryBuild
 	}
@@ -39,10 +45,14 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 
 	row, err := r.client.DB().QueryContext(ctx, q, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
 			return 0, ErrNoConnection
 		}
+
 		log.Error("query execution error", sl.Err(err))
 		return 0, ErrQuery
 	}
@@ -53,6 +63,8 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 	row.Next()
 	err = row.Scan(&id)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to scan returning id", sl.Err(err))
 		return 0, ErrPgxScan
 	}
@@ -61,6 +73,8 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 
 	err = r.LinkBannerTags(ctx, id, banner.FeatureID, banner.TagIDs)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		if strings.EqualFold(err.Error(), ErrDuplicate) {
 			log.Error("this banner already exists", sl.Err(err))
 			return 0, ErrAlreadyExists

@@ -6,6 +6,7 @@ networks:
 
 volumes:
   postgres-volume:
+  prometheus-volume:
 
 services:
   # Postgresql database
@@ -40,6 +41,7 @@ services:
     - ${REDIS_PORT}
     networks:
     - app_net
+
   # Banner service
   banners:
     container_name: banner-app
@@ -81,3 +83,74 @@ services:
       - db
     networks:
       - app_net
+
+  # Jaeger tracing and monitoring
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    command:
+      - "--query.base-path=/jaeger/ui"
+      - "--prometheus.server-url=${PROMETHEUS_ADDR}"
+      - "--prometheus.query.support-spanmetrics-connector=true"
+      - "--prometheus.query.normalize-calls=true"
+      - "--prometheus.query.normalize-duration=true"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=${PROMETHEUS_ADDR}
+    ports:
+      - '14269:14269'
+      - '4317:4317' # OTLP collector grpc
+      - '4318:4318' # OTLP collector http
+      - '16686:16686'
+      - '16685:16685'
+    expose:
+      - '4317'
+      - '14269'
+    networks:
+      - app_net
+
+  # Prometheus monitoring and TSDB
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus' #Where Prometheus writes its database. Defaults to data/.
+      - '--storage.tsdb.retention.time=1d' #When to remove old data. Defaults to 15d. Overrides storage.tsdb.retention if this flag is set to anything other than default.
+      - '--storage.tsdb.retention.size=1GB'
+      - '--enable-feature=otlp-write-receiver'
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-volume:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - app_net
+    deploy:
+      resources:
+        limits:
+          memory: 300m
+          cpus: "0.60"
+
+  # OpenTelemetry Collector
+  otelcol:
+    container_name: otelcol
+    image: otel/opentelemetry-collector-contrib:latest
+    restart: unless-stopped
+    command: [ "--config=/etc/otelcol-config.yml" ]
+    volumes:
+      - ./deploy/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
+    expose:
+      - '4318'
+    ports:
+      - '14318:4318'
+    depends_on:
+      - jaeger
+    networks:
+      - app_net
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+          cpus: "0.60"

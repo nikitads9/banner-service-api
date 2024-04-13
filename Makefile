@@ -24,7 +24,7 @@ install-go-deps: .install-go-deps
 		go mod tidy
 
 .PHONY: generate
-generate: generate-server generate mocks
+generate: generate-server generate-mocks
 generate-server:
 	go generate ./pkg
 generate-mocks:

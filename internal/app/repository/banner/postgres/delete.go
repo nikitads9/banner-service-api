@@ -9,6 +9,7 @@ import (
 	t "github.com/nikitads9/banner-service-api/internal/app/repository/banner/table"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	"go.opentelemetry.io/otel/codes"
 )
 
 func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
@@ -18,6 +19,9 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 		slog.String("op", op),
 	)
 
+	ctx, span := r.tracer.Start(ctx, op)
+	defer span.End()
+
 	builder := sq.Delete(t.BannerTable).
 		Where(
 			sq.Eq{t.ID: bannerID},
@@ -26,6 +30,8 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 
 	query, args, err := builder.ToSql()
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
 		return ErrQueryBuild
 	}
@@ -37,6 +43,9 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 
 	result, err := r.client.DB().ExecContext(ctx, q, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
 			return ErrNoConnection
@@ -46,6 +55,8 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 	}
 
 	if result.RowsAffected() == 0 {
+		span.RecordError(ErrNoRowsAffected)
+		span.SetStatus(codes.Error, ErrNoRowsAffected.Error())
 		log.Error("unsuccessful delete", sl.Err(ErrNoRowsAffected))
 		return ErrNotFound
 	}

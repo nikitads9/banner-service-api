@@ -8,6 +8,9 @@ import (
 
 	"github.com/go-faster/jx"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func (s *Service) GetBanner(ctx context.Context, featureID int64, tagID int64, useLastRevision bool) (jx.Raw, error) {
@@ -17,6 +20,9 @@ func (s *Service) GetBanner(ctx context.Context, featureID int64, tagID int64, u
 		slog.String("op", op),
 	)
 
+	ctx, span := s.tracer.Start(ctx, op)
+	defer span.End()
+
 	var content jx.Raw
 
 	key := fmt.Sprintf("%d-%d", featureID, tagID)
@@ -24,16 +30,20 @@ func (s *Service) GetBanner(ctx context.Context, featureID int64, tagID int64, u
 	if !useLastRevision {
 		content, err := s.bannerCache.Get(ctx, key)
 		if err == nil {
+			span.AddEvent("cached content found", trace.WithAttributes(attribute.String("key", key)))
 			return content, nil
 		}
 
-		log.Error("could not find content in cache", sl.Err(err))
+		span.AddEvent("could not find content in cache")
+		log.Info("could not find content in cache", sl.Err(err))
 	}
 
 	content, err := s.postgresRepository.GetBanner(ctx, featureID, tagID)
 	if err == nil {
 		err = s.bannerCache.Set(ctx, key, content, 5*time.Minute)
 		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 			log.Error("could not write content to cache", sl.Err(err))
 		}
 	}

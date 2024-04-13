@@ -11,6 +11,7 @@ import (
 	t "github.com/nikitads9/banner-service-api/internal/app/repository/banner/table"
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	"go.opentelemetry.io/otel/codes"
 )
 
 func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64) (jx.Raw, error) {
@@ -19,6 +20,9 @@ func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64
 	log := r.log.With(
 		slog.String("op", op),
 	)
+
+	ctx, span := r.tracer.Start(ctx, op)
+	defer span.End()
 
 	builder := sq.Select(t.Content).
 		From(t.BannerTable).Join(t.BannerTagTable + " ON " + t.BannerTable + "." + t.ID + "=" + t.BannerTagTable + "." + t.BannerID).
@@ -31,6 +35,8 @@ func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64
 
 	query, args, err := builder.ToSql()
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
 		return nil, ErrQueryBuild
 	}
@@ -44,6 +50,9 @@ func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64
 
 	err = r.client.DB().GetContext(ctx, &res, q, args...)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
 			return nil, ErrNoConnection

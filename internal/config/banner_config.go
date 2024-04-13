@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/exaring/otelpgx"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -38,12 +39,18 @@ type Redis struct {
 	Port     string `yaml:"port" env:"REDIS_PORT" env-default:"5679"`
 }
 
+type Tracer struct {
+	EndpointURL  string  `yaml:"endpoint_url" env:"TRACER_URL" env-default:"http://otelcol:4318"`
+	SamplingRate float64 `yaml:"sampling_rate" env:"TRACER_SAMPLING_RATE" env-default:"1.0"`
+}
+
 type BannerConfig struct {
 	Env      string       `yaml:"env" env:"ENV" env-default:"dev"`
 	Server   BannerServer `yaml:"server"`
 	Database Database     `yaml:"database"`
 	Jwt      JWT          `yaml:"jwt"`
 	Redis    Redis        `yaml:"redis"`
+	Tracer   Tracer       `yaml:"tracer"`
 }
 
 func ReadBannerConfigFile(path string) (*BannerConfig, error) {
@@ -83,6 +90,12 @@ func (b *BannerConfig) GetEnv() string {
 	return b.Env
 }
 
+// GetTracerConfig
+func (b *BannerConfig) GetTracerConfig() *Tracer {
+	return &b.Tracer
+}
+
+// GetRedisConfig
 func (b *BannerConfig) GetRedisConfig() *Redis {
 	return &b.Redis
 }
@@ -95,6 +108,7 @@ func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 		return nil, err
 	}
 
+	poolConfig.ConnConfig.Tracer = otelpgx.NewTracer(otelpgx.WithTrimSQLInSpanName())
 	poolConfig.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 	poolConfig.MaxConns = b.Database.MaxOpenedConnections
 

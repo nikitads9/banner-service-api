@@ -1,5 +1,7 @@
 package banner
 
+//go:generate mockgen --build_flags=--mod=mod -destination=./mocks/banner_service_cache.go -package=mocks . Cache
+
 import (
 	"context"
 	"time"
