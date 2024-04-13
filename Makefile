@@ -31,10 +31,26 @@ generate-mocks:
 	go generate ./internal/...
 
 
-.PHONY: docker
-docker: env docker-compose
-docker-compose:
-	docker compose up -d
+.PHONY: run
+run: env docker-compose-up
+docker-compose-up:
+	docker-compose up -d
+
+.PHONY: stop
+stop:
+	docker compose stop
+
+.PHONY: down
+down:
+	docker compose down
+
+.PHONY: docker-build
+docker-build: docker-build-banner migrator
+docker-build-banner: 
+	docker build --no-cache -f ./deploy/banner/Dockerfile . --tag nikitads9/banner-service-api:app
+docker-build-migrator: 
+	docker build --no-cache -f ./deploy/migrations/Dockerfile  ./deploy/migrations --tag nikitads9/banner-service-api:migrator
+
 
 .PHONY: build
 build: build-server build-client
