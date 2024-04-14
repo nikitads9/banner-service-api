@@ -20,8 +20,10 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v -race -coverprofile="coverage.out" -covermode=atomic ./...
+    - name: Integration tests
+      run: make run-integration-tests
+    -
+      run: go test -v -race -coverprofile="coverage.out" -covermode=atomic ./internal
     - name: Test coverage
       uses: codecov/codecov-action@v4
       with:
