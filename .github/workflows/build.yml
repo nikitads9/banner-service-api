@@ -24,8 +24,6 @@ jobs:
       uses: hoverkraft-tech/compose-action@v2.0.0
       with:
         compose-file: "./docker-compose-test.yml"
-        up-flags: "-d"
-        down-flags: "-d"
       env: 
         DB_TEST_HOST: db-test
         DB_PORT: 5433
