@@ -234,4 +234,23 @@ func (as *APISuite) TestGetBanner() {
 			Status(http.StatusBadRequest).
 			End()
 	})
+	t.Run("Попытка получения баннера без одного из обязательных параметров", func(t *testing.T) {
+		apitest.New().
+			Handler(as.server).
+			Get(path).
+			Query(TagIDParam, "4").
+			Header(TokenHeader, as.userToken).
+			Expect(t).
+			Status(http.StatusBadRequest).
+			End()
+
+		apitest.New().
+			Handler(as.server).
+			Get(path).
+			Query(FeatureIDParam, "3").
+			Header(TokenHeader, as.userToken).
+			Expect(t).
+			Status(http.StatusBadRequest).
+			End()
+	})
 }

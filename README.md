@@ -63,8 +63,8 @@ Avito backend task 2024.
 1. ✔ Адаптировать систему для значительного увеличения количества тегов и фичей, при котором допускается 
    увеличение времени исполнения по редко запрашиваемым тегам и фичам. 
    * Помимо автоматически назначаемых postgres-ом индексов на первичные ключи, были созданы индексы btree на внешние ключи ***feature_id*** и ***tag_id***.
-2. ✘ Провести нагрузочное тестирование полученного решения и приложить результаты тестирования к решению.
-   * В процессе
+2. ✔ Провести нагрузочное тестирование полученного решения и приложить результаты тестирования к решению.
+   * Нагрузочное тестирование произведено с помощью [wrk](https://github.com/wg/wrk). Подробнее смотрите в разделе [Нагрузочное тестирование](#нагрузочное-тестирование)
 3. ✘ Иногда получается так, что необходимо вернуться к одной из трех предыдущих версий баннера в связи с 
    найденной ошибкой в логике, тексте и т.д.  Измените API таким образом, чтобы можно было просмотреть существующие 
    версии баннера и выбрать подходящую версию.
@@ -244,141 +244,168 @@ make run-integration-tests
 - RAM: Ограничено 5GB DDR4
 - SSD: Samsung PM981 Polaris 1TB M.2
 
+Для создания нагрузки на хэндлер чтения баннеров пользователями
+
+```bash
+wrk -c30 -d1m -t4 -H "Token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI" 'http://localhost:3000/user_banner?tag_id=22&feature_id=10'
+```
+
+![user banner cache bench](assets/benchmark-user-banner-cache.png)
+
+Если баннеры получаются только из БД.
+
+```bash
+wrk -c30 -d1m -t4 -H "Token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI" 'http://localhost:3000/user_banner?tag_id=22&feature_id=10&use_last_revision=true'
+```
+
+![user banner db bench](assets/benchmark-user-banner-db.png)
+
+Для создания нагрузки на хэндлер чтения баннеров администраторами
+
+```bash
+wrk -c30 -d1m -t4 -H "Token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" 'http://localhost:3000/banner?feature_id=10&limit=1000&offset=0'
+```
+
+![admin banner bench](assets/benchmark-admin-banners.png)
+
+Вывод: требования SLI выполнены.
+
 ## Структура проекта
 
 <details>
 
-   ```
-   📦 banner-service-api
-   ├─ .env.example
-   ├─ .github
-   │  └─ workflows
-   │     ├─ build.yml
-   │     └─ linter.yml
-   ├─ .gitignore
-   ├─ Makefile
-   ├─ README.md
-   ├─ assets
-   │  ├─ project-design-dark.png
-   │  └─ project-design-light.png
-   ├─ cmd
-   │  ├─ client
-   │  │  └─ main.go
-   │  └─ server
-   │     └─ main.go
-   ├─ configs
-   │  └─ banners_config.yml
-   ├─ deploy
-   │  ├─ banner
-   │  │  └─ Dockerfile
-   │  ├─ database
-   │  │  └─ init.sql
-   │  ├─ migrations
-   │  │  ├─ 20240408140625_add_table.sql
-   │  │  ├─ 20240413195657_fill_db.sql
-   │  │  ├─ Dockerfile
-   │  │  └─ migration.sh
-   │  ├─ otelcollector
-   │  │  └─ otelcol-config.yml
-   │  └─ prometheus
-   │     └─ prometheus.yml
-   ├─ docker-compose.yml
-   ├─ docs
-   │  └─ api.yml
-   ├─ go.mod
-   ├─ go.sum
-   ├─ internal
-   │  ├─ app
-   │  │  ├─ api
-   │  │  │  ├─ banner.go
-   │  │  │  ├─ create.go
-   │  │  │  ├─ delete_banner.go
-   │  │  │  ├─ get_banner.go
-   │  │  │  ├─ get_banners.go
-   │  │  │  └─ set_banner.go
-   │  │  ├─ convert
-   │  │  │  └─ convert.go
-   │  │  ├─ model
-   │  │  │  └─ banner.go
-   │  │  ├─ repository
-   │  │  │  └─ banner
-   │  │  │     ├─ cache.go
-   │  │  │     ├─ cache
-   │  │  │     │  └─ banner.go
-   │  │  │     ├─ db.go
-   │  │  │     ├─ mocks
-   │  │  │     │  ├─ banner_service_cache.go
-   │  │  │     │  └─ banner_service_repository.go
-   │  │  │     ├─ postgres
-   │  │  │     │  ├─ banner.go
-   │  │  │     │  ├─ create.go
-   │  │  │     │  ├─ delete.go
-   │  │  │     │  ├─ get_banner.go
-   │  │  │     │  ├─ get_banners.go
-   │  │  │     │  └─ set_banner.go
-   │  │  │     └─ table
-   │  │  │        └─ table.go
-   │  │  └─ service
-   │  │     ├─ banner
-   │  │     │  ├─ banner.go
-   │  │     │  ├─ create.go
-   │  │     │  ├─ delete_banner.go
-   │  │     │  ├─ get_banner.go
-   │  │     │  ├─ get_banners.go
-   │  │     │  └─ set_banner.go
-   │  │     └─ jwt
-   │  │        └─ jwt.go
-   │  ├─ config
-   │  │  └─ banner_config.go
-   │  ├─ logger
-   │  │  ├─ handlers
-   │  │  │  └─ slogdiscard
-   │  │  │     └─ slogdiscard.go
-   │  │  └─ sl
-   │  │     └─ sl.go
-   │  ├─ middleware
-   │  │  ├─ auth
-   │  │  │  └─ auth.go
-   │  │  └─ logger
-   │  │     └─ logger.go
-   │  └─ pkg
-   │     ├─ banner
-   │     │  ├─ app.go
-   │     │  └─ service-provider.go
-   │     ├─ db
-   │     │  ├─ interface.go
-   │     │  ├─ mocks_db
-   │     │  │  └─ mock_db.go
-   │     │  ├─ mocks_tx
-   │     │  │  └─ mock_tx.go
-   │     │  ├─ pg
-   │     │  │  ├─ client.go
-   │     │  │  ├─ pg.go
-   │     │  │  └─ transaction.go
-   │     │  └─ redis
-   │     │     └─ client.go
-   │     └─ observability
-   │        └─ tracer.go
-   └─ pkg
-      ├─ banner-api
-      │  ├─ oas_cfg_gen.go
-      │  ├─ oas_client_gen.go
-      │  ├─ oas_handlers_gen.go
-      │  ├─ oas_interfaces_gen.go
-      │  ├─ oas_json_gen.go
-      │  ├─ oas_middleware_gen.go
-      │  ├─ oas_parameters_gen.go
-      │  ├─ oas_request_decoders_gen.go
-      │  ├─ oas_request_encoders_gen.go
-      │  ├─ oas_response_decoders_gen.go
-      │  ├─ oas_response_encoders_gen.go
-      │  ├─ oas_router_gen.go
-      │  ├─ oas_schemas_gen.go
-      │  ├─ oas_security_gen.go
-      │  ├─ oas_server_gen.go
-      │  ├─ oas_unimplemented_gen.go
-      │  └─ oas_validators_gen.go
-      └─ generate.go
-   ```
+```
+📦 banner-service-api
+├─ .env.example
+├─ .github
+│  └─ workflows
+│     ├─ build.yml
+│     └─ linter.yml
+├─ .gitignore
+├─ .golangci.pipeline.yaml
+├─ Makefile
+├─ README.md
+├─ apitest
+│  ├─ api_test.go
+│  └─ get_banner_test.go
+├─ assets
+│  ├─ project-design-dark.png
+│  └─ project-design-light.png
+├─ cmd
+│  └─ server
+│     └─ main.go
+├─ configs
+│  ├─ banners_config.yml
+│  └─ banners_test_config.yml
+├─ deploy
+│  ├─ banner
+│  │  └─ Dockerfile
+│  ├─ database
+│  │  └─ init.sql
+│  ├─ migrations
+│  │  ├─ 20240408140625_add_table.sql
+│  │  ├─ 20240413195657_fill_db.sql
+│  │  ├─ Dockerfile
+│  │  └─ migration.sh
+│  ├─ otelcollector
+│  │  └─ otelcol-config.yml
+│  └─ prometheus
+│     └─ prometheus.yml
+├─ docker-compose-test.yml
+├─ docker-compose.yml
+├─ docs
+│  └─ api.yml
+├─ go.mod
+├─ go.sum
+├─ internal
+│  ├─ app
+│  │  ├─ api
+│  │  │  ├─ banner.go
+│  │  │  ├─ create.go
+│  │  │  ├─ delete_banner.go
+│  │  │  ├─ get_banner.go
+│  │  │  ├─ get_banners.go
+│  │  │  └─ set_banner.go
+│  │  ├─ convert
+│  │  │  └─ convert.go
+│  │  ├─ model
+│  │  │  └─ banner.go
+│  │  ├─ repository
+│  │  │  └─ banner
+│  │  │     ├─ cache.go
+│  │  │     ├─ cache
+│  │  │     │  └─ banner.go
+│  │  │     ├─ db.go
+│  │  │     ├─ mocks
+│  │  │     │  ├─ banner_service_cache.go
+│  │  │     │  └─ banner_service_repository.go
+│  │  │     ├─ postgres
+│  │  │     │  ├─ banner.go
+│  │  │     │  ├─ create.go
+│  │  │     │  ├─ delete.go
+│  │  │     │  ├─ get_banner.go
+│  │  │     │  ├─ get_banners.go
+│  │  │     │  └─ set_banner.go
+│  │  │     └─ table
+│  │  │        └─ table.go
+│  │  └─ service
+│  │     ├─ banner
+│  │     │  ├─ banner.go
+│  │     │  ├─ create.go
+│  │     │  ├─ delete_banner.go
+│  │     │  ├─ get_banner.go
+│  │     │  ├─ get_banners.go
+│  │     │  └─ set_banner.go
+│  │     └─ jwt
+│  │        └─ jwt.go
+│  ├─ config
+│  │  └─ banner_config.go
+│  ├─ logger
+│  │  └─ sl
+│  │     └─ sl.go
+│  ├─ middleware
+│  │  ├─ auth
+│  │  │  └─ auth.go
+│  │  └─ logger
+│  │     └─ logger.go
+│  └─ pkg
+│     ├─ banner
+│     │  ├─ app.go
+│     │  └─ service-provider.go
+│     ├─ db
+│     │  ├─ interface.go
+│     │  ├─ mocks_db
+│     │  │  └─ mock_db.go
+│     │  ├─ mocks_tx
+│     │  │  └─ mock_tx.go
+│     │  ├─ pg
+│     │  │  ├─ client.go
+│     │  │  ├─ pg.go
+│     │  │  └─ transaction.go
+│     │  └─ redis
+│     │     └─ client.go
+│     └─ observability
+│        └─ tracer.go
+└─ pkg
+   ├─ banner-api
+   │  ├─ oas_cfg_gen.go
+   │  ├─ oas_client_gen.go
+   │  ├─ oas_handlers_gen.go
+   │  ├─ oas_interfaces_gen.go
+   │  ├─ oas_json_gen.go
+   │  ├─ oas_middleware_gen.go
+   │  ├─ oas_parameters_gen.go
+   │  ├─ oas_request_decoders_gen.go
+   │  ├─ oas_request_encoders_gen.go
+   │  ├─ oas_response_decoders_gen.go
+   │  ├─ oas_response_encoders_gen.go
+   │  ├─ oas_router_gen.go
+   │  ├─ oas_schemas_gen.go
+   │  ├─ oas_security_gen.go
+   │  ├─ oas_server_gen.go
+   │  ├─ oas_unimplemented_gen.go
+   │  └─ oas_validators_gen.go
+   └─ generate.go
+```
 
 </details>
