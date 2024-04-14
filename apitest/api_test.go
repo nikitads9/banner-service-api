@@ -96,7 +96,7 @@ func (b *TestBannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 	return poolConfig, nil
 }
 
-type ApiSuite struct {
+type APISuite struct {
 	suite.Suite
 	handler          *api.Implementation
 	server           *desc.Server
@@ -113,7 +113,7 @@ type ApiSuite struct {
 	userToken        string
 }
 
-func (as *ApiSuite) SetupTest() {
+func (as *APISuite) SetupTest() {
 	t := as.Suite.T()
 	t.Log("Загрузка конфигурации окружения")
 	cfg, err := ReadTestBannerConfigFile("../configs/banners_test_config.yml")
@@ -197,7 +197,7 @@ func (as *ApiSuite) SetupTest() {
 	as.adminToken = "AdminToken " + token
 }
 
-func (as *ApiSuite) TearDownTest() {
+func (as *APISuite) TearDownTest() {
 	t := as.Suite.T()
 	t.Run("truncate", func(t *testing.T) {
 		_, err := as.pgClient.DB().ExecContext(context.Background(), db.Query{QueryRaw: `TRUNCATE banners CASCADE`})
@@ -209,17 +209,9 @@ func (as *ApiSuite) TearDownTest() {
 		require.Nil(t, err)
 	})
 
-	as.pgClient.Close()
-}
-
-func (as *ApiSuite) checkDeleted(bannerID int64) error {
-	id := 0
-	return as.pgClient.
-		DB().
-		QueryRowContext(context.Background(), db.Query{QueryRaw: "SELECT banner_id FROM banners_tags WHERE banner_id = $1"}, bannerID).
-		Scan(&id)
+	defer as.pgClient.Close() //nolint:errcheck
 }
 
 func TestRunApiTest(t *testing.T) {
-	suite.Run(t, &ApiSuite{Suite: suite.Suite{}})
+	suite.Run(t, &APISuite{Suite: suite.Suite{}})
 }

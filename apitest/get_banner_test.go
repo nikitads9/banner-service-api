@@ -28,7 +28,7 @@ func (b *BannerInfo) SetBannerID(id int64) {
 	b.bannerID = id
 }
 
-func (as *ApiSuite) TestGetBanner() {
+func (as *APISuite) TestGetBanner() {
 	t := as.Suite.T()
 	t.Log("Тестирование метода GetUBanner: GET /user_banner")
 
