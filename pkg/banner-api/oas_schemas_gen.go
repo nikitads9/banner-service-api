@@ -8,17 +8,17 @@ import (
 	"github.com/go-faster/jx"
 )
 
-type AdminToken struct {
+type Bearer struct {
 	APIKey string
 }
 
 // GetAPIKey returns the value of APIKey.
-func (s *AdminToken) GetAPIKey() string {
+func (s *Bearer) GetAPIKey() string {
 	return s.APIKey
 }
 
 // SetAPIKey sets the value of APIKey.
-func (s *AdminToken) SetAPIKey(val string) {
+func (s *Bearer) SetAPIKey(val string) {
 	s.APIKey = val
 }
 
@@ -689,17 +689,3 @@ func (s *SetBannerRequest) SetIsActive(val OptNilBool) {
 type SetBannerUnauthorized struct{}
 
 func (*SetBannerUnauthorized) setBannerRes() {}
-
-type UserToken struct {
-	APIKey string
-}
-
-// GetAPIKey returns the value of APIKey.
-func (s *UserToken) GetAPIKey() string {
-	return s.APIKey
-}
-
-// SetAPIKey sets the value of APIKey.
-func (s *UserToken) SetAPIKey(val string) {
-	s.APIKey = val
-}

@@ -188,13 +188,13 @@ func (as *APISuite) SetupTest() {
 	if err != nil {
 		t.Fatalf("[App] Init - cannot generate user token. Error: %s", err)
 	}
-	as.userToken = "UserToken " + token
+	as.userToken = "Bearer " + token
 
 	token, err = as.jwtService.GenerateToken(ctx, "admin")
 	if err != nil {
 		t.Fatalf("[App] Init - cannot generate admin token. Error: %s", err)
 	}
-	as.adminToken = "AdminToken " + token
+	as.adminToken = "Bearer " + token
 }
 
 func (as *APISuite) TearDownTest() {

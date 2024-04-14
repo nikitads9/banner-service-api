@@ -23,11 +23,12 @@ Avito backend task 2024.
 - Логирование было реализовано с помощью slog, формат логов выбирается в зависимости от обозначенной в конфиге или в переменной окружения среды запуска сервера: local, dev, prod. В двух последних случаях логи выводятся в stdout в формате JSON.
 - Написаны middleware для логирования и авторизации по JWT-токену.
 - Операции `CreateBanner`, `SetBanner` производятся в транзакции с уровнем изоляции ReadCommitted и откате при какой-либо ошибке.
-- В качестве основной среды для запуска решения предполагается `Docker` контейнеры. Описана конфигурация docker-compose для контейнеров с резидентной кэш базой данных `Redis`, реляционной СУБД `PostgreSQL`, коллектора телеметрии `otelcol`, платформы для трейсинга `Jaeger`, NoSQL time series DB `Prometheus`. Для сборки образа серверного приложения написан multi-stage `Dockerfile`, в котором сборка производится на основе образа `golang:1.22-alpine`, а запускаться сервер будет в `alpine:latest`.
+- В качестве основной среды для запуска решения предполагаются `Docker` контейнеры. Описана конфигурация docker-compose для контейнеров с резидентной кэш базой данных `Redis`, реляционной СУБД `PostgreSQL`, коллектора телеметрии `otelcol`, платформы для трейсинга `Jaeger`, NoSQL time series DB `Prometheus`. Для сборки образа серверного приложения написан multi-stage `Dockerfile`, в котором сборка производится на основе образа `golang:1.22-alpine`, а запускаться сервер будет в `alpine:latest`.
 - Драйвер для подключения и запросов в PostgreSQL: [pgx](https://github.com/jackc/pgx) и [pgxpool](https://github.com/jackc/pgx/tree/master/pgxpool).
 - Для хранения кэша используется `Redis` с SDK [go-redis](https://github.com/redis/go-redis).
 - Для удобного развертывания были написаны скрипты `Makefile`, позволяющие накатывать и откатывать миграции, собирать бинарники, производить тестирование и генерировать моки (`mockgen`) и серверный код (`ogen-go`).
-- Линтер-проверки, проверка на прохождение тестов и проверка на build выполнены в `Github Actions` с помощью пайплайнов build и linter.
+- Линтер-проверки, проверка на прохождение тестов и проверка на build выполнены в `Github Actions` с помощью пайплайнов [build](.github/workflows/build.yml) и [linter](.github/workflows/linter.yml).
+- Интеграционное тестирование реализовано в пайплайне на события ***Pull Request*** или ***Push*** в ветке main. При непрохождении коммитом какого-либо теста, шильдик [![build and test](https://github.com/nikitads9/banner-service-api/actions/workflows/build.yml/badge.svg)](https://github.com/nikitads9/banner-service-api/actions/workflows/build.yml) устанавливается в значение `failing`.
 <br /> <br /> <br />
   ![project design](assets/project-design-dark.png#gh-dark-mode-only)
   ![project design](assets/project-design-light.png#gh-light-mode-only)
@@ -44,11 +45,11 @@ Avito backend task 2024.
    - Добавил поля, необходимые для удовлетворения требований к синтаксису OAS. Это такие поля как: описание операций, теги операций, глобальные теги, контактные данные.
    - Добавил securitySchema конфигурацию, для того, чтобы четко сформулировать механизм получения токенов.
 2. ✔ Тегов и фичей небольшое количество (до 1000), RPS — 1k, SLI времени ответа — 50 мс, SLI успешности ответа — 99.99%
-   * В качестве инфраструктуры observability использована связка Prometheus + Jaeger. Первый служит хранилищщем метрик, второй нужен для трейсинга запросов и мониторинга (к сожалению не в риалтайм, приходится прожимать F5). За выполнением SLI можно следить в Jaeger.
+   * В качестве инфраструктуры observability использована связка Prometheus + Jaeger. Первый служит хранилищем для метрик, второй нужен для трейсинга запросов и мониторинга (к сожалению не в риалтайм, приходится прожимать F5). За выполнением SLI можно следить в Jaeger.
 3. ✔ Для авторизации доступов должны использоваться 2 вида токенов: пользовательский и админский.
    Получение баннера может происходить с помощью пользовательского или админского токена, а все остальные 
    действия могут выполняться только с помощью админского токена. 
-   * Написан middleware для проверки токенов, токены админов начинаются с префикса AdminToken, а у юзеров - UserToken.
+   * Написан middleware для проверки токенов, токены начинаются с префикса ```Bearer ```.
 4. ✔ Реализуйте интеграционный или E2E-тест на сценарий получения баннера.
    * Был написан интеграционный тест с использованием библиотеки [testify](https://github.com/stretchr/testify) (набор тестов TestSuite, подготовка среды и последующая очистка БД и кэша `Redis`) и [api-test](https://apitest.dev/), предоставляющего методы для тестирования http-сервера. В процессе были мокированы только `trace.Tracer` и `slog.Logger`.
 5. ✔ Если при получении баннера передан флаг use_last_revision, необходимо отдавать самую актуальную информацию.
@@ -159,7 +160,7 @@ make docker-build
 	"scheme": "http",
 	"base_path": "",
 	"host": "localhost:3000",
-	"token": "UserToken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI"
+	"token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI"
 }
 ```
 Для админа окружение аналогичное, отличие лишь в токене.
@@ -168,23 +169,23 @@ make docker-build
 	"scheme": "http",
 	"base_path": "",
 	"host": "localhost:3000",
-	"token": "AdminToken eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g"
+	"token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g"
 }
 ```
 Если по каким-то причинам токены, приведенные выше, устарели, [здесь](https://jwt.io/) можно создать новые с следующим содержанием (токен админа отличается тем, что в поле `scope` указано значение ***admin***):
 ```json
-// HEADER:ALGORITHM & TOKEN TYPE
+/* HEADER:ALGORITHM & TOKEN TYPE */
 {
   "alg": "HS256",
   "typ": "JWT"
 }
-// PAYLOAD:DATA
+/* PAYLOAD:DATA */
 {
   "exp": 1719986235,
   "scope": "user"
 }
 
-// VERIFY SIGNATURE
+/* VERIFY SIGNATURE */
 HMACSHA256(
   base64UrlEncode(header) + "." +
   base64UrlEncode(payload),
@@ -211,7 +212,9 @@ goose create <NAME> sql
 make migrate
 ```
 Как только ваша миграция успешно накатилась, проверьте, сработает ли откат - вернется ли база данных в изначальный статус.
+
 ## Интеграционное тестирование
+
 Для того, чтобы запустить среду для интеграционных тестов (названия контейнеров не конфликтуют, но контейнеры основного проекта должны быть остановлены для того, чтобы избежать коллизии портов):
 ```bash
 make run-test-environment
@@ -230,6 +233,7 @@ make down-test-environment
 ```bash
 make run-integration-tests
 ```
+
 В качестве забавной фишки в одном из тесткейсов `api-test` генерируется диаграмма последовательностей (в папке ` apitest/.sequence ` ).
 
 ## Нагрузочное тестирование

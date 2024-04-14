@@ -37,20 +37,20 @@ func NewSecurity(logger *slog.Logger, jwtService jwt.Service) Security {
 	}
 }
 
-// HandleAdminToken ...
-func (s Security) HandleAdminToken(ctx context.Context, _ string, t desc.AdminToken) (context.Context, error) {
-	const op = "middleware.auth.handleAdminToken"
+// HandleBearer ...
+func (s Security) HandleBearer(ctx context.Context, _ string, t desc.Bearer) (context.Context, error) {
+	const op = "middleware.auth.handleToken"
 
 	log := s.logger.With(
 		slog.String("op", op),
 	)
 
-	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "AdminToken ") {
+	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "Bearer ") {
 		log.Error("missing token ", sl.Err(errMissingToken))
 		return ctx, errMissingToken
 	}
 
-	token := strings.TrimPrefix(t.APIKey, "AdminToken ")
+	token := strings.TrimPrefix(t.APIKey, "Bearer ")
 	scope, err := s.jwtService.VerifyToken(ctx, token)
 	if err != nil {
 		log.Error("issue verifying jwt token", sl.Err(err))
@@ -59,30 +59,6 @@ func (s Security) HandleAdminToken(ctx context.Context, _ string, t desc.AdminTo
 
 	ctx = withScope(ctx, scope)
 
-	return ctx, nil
-}
-
-// HandleUserToken ...
-func (s Security) HandleUserToken(ctx context.Context, _ string, t desc.UserToken) (context.Context, error) {
-	const op = "middleware.auth.handleUserToken"
-
-	log := s.logger.With(
-		slog.String("op", op),
-	)
-
-	if t.APIKey == "" || !strings.HasPrefix(t.APIKey, "UserToken ") {
-		log.Error("missing token ", sl.Err(errMissingToken))
-		return ctx, errMissingToken
-	}
-
-	token := strings.TrimPrefix(t.APIKey, "UserToken ")
-	scope, err := s.jwtService.VerifyToken(ctx, token)
-	if err != nil {
-		log.Error("issue verifying jwt token", sl.Err(err))
-		return ctx, err
-	}
-
-	ctx = withScope(ctx, scope)
 	return ctx, nil
 }
 

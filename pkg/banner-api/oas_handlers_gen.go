@@ -67,14 +67,14 @@ func (s *Server) handleCreateBannerRequest(args [0]string, argsEscaped bool, w h
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityAdminToken(ctx, "CreateBanner", r)
+			sctx, ok, err := s.securityBearer(ctx, "CreateBanner", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "AdminToken",
+					Security:         "Bearer",
 					Err:              err,
 				}
-				recordError("Security:AdminToken", err)
+				recordError("Security:Bearer", err)
 				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
@@ -218,14 +218,14 @@ func (s *Server) handleDeleteBannerRequest(args [1]string, argsEscaped bool, w h
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityAdminToken(ctx, "DeleteBanner", r)
+			sctx, ok, err := s.securityBearer(ctx, "DeleteBanner", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "AdminToken",
+					Security:         "Bearer",
 					Err:              err,
 				}
-				recordError("Security:AdminToken", err)
+				recordError("Security:Bearer", err)
 				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
@@ -372,14 +372,14 @@ func (s *Server) handleGetBannerRequest(args [0]string, argsEscaped bool, w http
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityUserToken(ctx, "GetBanner", r)
+			sctx, ok, err := s.securityBearer(ctx, "GetBanner", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "UserToken",
+					Security:         "Bearer",
 					Err:              err,
 				}
-				recordError("Security:UserToken", err)
+				recordError("Security:Bearer", err)
 				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
@@ -489,8 +489,8 @@ func (s *Server) handleGetBannerRequest(args [0]string, argsEscaped bool, w http
 // Получение данных о баннерах для админов c фильтрацией
 // по фиче и/или тегу и возможностью ограничить
 // количество баннеров.  По умолчанию количество
-// возвращаемых баннеров равняется 1000. Доступно только
-// админам.
+// возвращаемых баннеров ограничено 1000, сдвиг по
+// умолчанию равен 0. Доступно только админам.
 //
 // GET /banner
 func (s *Server) handleGetBannersRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -534,14 +534,14 @@ func (s *Server) handleGetBannersRequest(args [0]string, argsEscaped bool, w htt
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityAdminToken(ctx, "GetBanners", r)
+			sctx, ok, err := s.securityBearer(ctx, "GetBanners", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "AdminToken",
+					Security:         "Bearer",
 					Err:              err,
 				}
-				recordError("Security:AdminToken", err)
+				recordError("Security:Bearer", err)
 				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
@@ -698,14 +698,14 @@ func (s *Server) handleSetBannerRequest(args [1]string, argsEscaped bool, w http
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityAdminToken(ctx, "SetBanner", r)
+			sctx, ok, err := s.securityBearer(ctx, "SetBanner", r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "AdminToken",
+					Security:         "Bearer",
 					Err:              err,
 				}
-				recordError("Security:AdminToken", err)
+				recordError("Security:Bearer", err)
 				s.cfg.ErrorHandler(ctx, w, r, err)
 				return
 			}
