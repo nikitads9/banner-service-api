@@ -1,0 +1,63 @@
+version: "3.8"
+
+networks:
+  app_test_net:
+    driver: bridge
+
+volumes:
+  postgres-test-volume:
+
+services:
+  # Postgresql test database
+  db-test:
+    container_name: banner-test-storage
+    image: postgres:16-alpine3.19
+    environment:
+      - "POSTGRES_DB=${DB_NAME}"
+      - "POSTGRES_USER=${DB_USER}"
+      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
+      - "PGDATA=${PGDATA}"
+    volumes: 
+      - postgres-test-volume:/var/lib/postgresql/data
+    #  - ./deploy/database/init.sql:/docker-entrypoint-initdb.d/init.sql 
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    expose:
+    - ${DB_PORT}
+    command: -p ${DB_PORT}
+    networks:
+      - app_test_net
+  # redis kv test database (cached)
+  redis-test:
+    container_name: redis-test
+    image: redis:latest
+    restart: unless-stopped
+    #environment:
+    #  REDIS_ARGS: "--requirepass ${REDIS_PASS} --user ${REDIS_USER} on >password ~* allcommands --user default off nopass nocommands"
+    ports:
+    - ${REDIS_PORT}:${REDIS_PORT}
+    expose:
+    - ${REDIS_PORT}
+
+  # Goose migrations manager for test-db
+  migrator-test:
+    container_name: banner-migrator-test
+    build: 
+      context: ./deploy/migrations/
+      dockerfile: Dockerfile
+    restart: on-failure
+    image: nikitads9/banner-service:migrator
+    environment:
+      - 'GOOSE_DRIVER=postgres'
+      - 'DB_HOST=${DB_TEST_HOST}'
+      - 'DB_PORT=${DB_PORT}'
+      - 'DB_NAME=${DB_NAME}'
+      - 'DB_USER=${DB_USER}'
+      - 'DB_PASSWORD=${DB_PASSWORD}'
+      - 'DB_SSL=${DB_SSL}'
+    volumes:
+      - ./deploy/migrations/:/migrations/  
+    depends_on:
+      - db-test
+    networks:
+      - app_test_net

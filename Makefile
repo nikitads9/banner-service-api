@@ -65,10 +65,29 @@ build-client:
 migrate:
 	docker start banner-migrator
 
+.PHONY: run-integration-tests
+run-integration-tests: run-test-environment integration-tests down-test-environment
+
+.PHONY: run-test-environment 
+run-test-environment: env docker-compose-test
+docker-compose-test:	
+	docker compose -f ./docker-compose-test.yml up -d
+
+.PHONY: integration-tests
+integration-tests:
+	go test -tags=integration ./apitest
+
+.PHONY: down-test-environment
+down-test-environment:
+	docker compose -f ./docker-compose-test.yml down
+
+
+
 .PHONY: coverage
-coverage:
-	go test -race -coverprofile="coverage.out" -covermode=atomic ./...
-	go tool cover -html="coverage.out"
+run-coverage:
+	go test -covermode=atomic -coverprofile=cover ./...
+	cat cover | fgrep -v "mock" | fgrep -v "docs" | fgrep -v "config" > cover2
+	go tool cover -func=cover2
 
 PHONY: test-coverage
 test-coverage:
