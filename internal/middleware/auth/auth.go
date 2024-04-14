@@ -38,7 +38,7 @@ func NewSecurity(logger *slog.Logger, jwtService jwt.Service) Security {
 }
 
 // HandleAdminToken ...
-func (s Security) HandleAdminToken(ctx context.Context, operationName string, t desc.AdminToken) (context.Context, error) {
+func (s Security) HandleAdminToken(ctx context.Context, _ string, t desc.AdminToken) (context.Context, error) {
 	const op = "middleware.auth.handleAdminToken"
 
 	log := s.logger.With(
@@ -63,7 +63,7 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 }
 
 // HandleUserToken ...
-func (s Security) HandleUserToken(ctx context.Context, operationName string, t desc.UserToken) (context.Context, error) {
+func (s Security) HandleUserToken(ctx context.Context, _ string, t desc.UserToken) (context.Context, error) {
 	const op = "middleware.auth.handleUserToken"
 
 	log := s.logger.With(

@@ -125,7 +125,7 @@ func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 }
 
 // GetAddress ...
-func (c *BannerConfig) GetAddress(host string, port string) string {
+func (b *BannerConfig) GetAddress(host string, port string) string {
 	address := host + ":" + port
 	//TODO: regex check
 	return address

@@ -31,7 +31,7 @@ func (i *Implementation) GetBanners(ctx context.Context, params desc.GetBannersP
 
 	var (
 		limit  int64 = 1000
-		offset int64 = 0
+		offset int64
 	)
 
 	banners, err := i.bannerService.GetBanners(ctx, convert.ToGetBannersParams(params, limit, offset))

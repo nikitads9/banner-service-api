@@ -7,6 +7,7 @@ import (
 	desc "github.com/nikitads9/banner-service-api/pkg/banner-api"
 )
 
+// ToBanner ...
 func ToBanner(req *desc.CreateBannerRequest) *model.Banner {
 	return &model.Banner{
 		FeatureID: req.GetFeatureID(),
@@ -16,6 +17,7 @@ func ToBanner(req *desc.CreateBannerRequest) *model.Banner {
 	}
 }
 
+// ToGetBannersResponse ...
 func ToGetBannersResponse(mod []*model.BannerInfo) []desc.GetBannersResponseItem {
 	res := make([]desc.GetBannersResponseItem, 0, len(mod))
 	for _, val := range mod {
@@ -41,6 +43,7 @@ func ToGetBannersResponse(mod []*model.BannerInfo) []desc.GetBannersResponseItem
 	return res
 }
 
+// ToSetBannerInfo ...
 func ToSetBannerInfo(bannerID int64, req *desc.SetBannerRequest) *model.SetBannerInfo {
 	res := &model.SetBannerInfo{
 		BannerID: bannerID,
@@ -70,6 +73,7 @@ func ToSetBannerInfo(bannerID int64, req *desc.SetBannerRequest) *model.SetBanne
 	return res
 }
 
+// ToGetBannersParams ...
 func ToGetBannersParams(params desc.GetBannersParams, limit int64, offset int64) *model.GetBannersParams {
 	return &model.GetBannersParams{
 		FeatureID: sql.NullInt64{
