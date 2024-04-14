@@ -24,3 +24,4 @@ jobs:
           uses: golangci/golangci-lint-action@v4
           with:
             version: latest
+            args: --timeout=30m --config=./.golangci.pipeline.yaml --issues-exit-code=0
