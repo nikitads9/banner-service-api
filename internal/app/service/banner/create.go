@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
+// CreateBanner это создание нового баннера.
 func (s *Service) CreateBanner(ctx context.Context, mod *model.Banner) (int64, error) {
 	const op = "service.banners.CreateBanner"
 

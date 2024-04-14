@@ -1,7 +1,6 @@
 package tables
 
 var (
-	FeatureTable   = `features`
 	ID             = `id`
 	BannerID       = `banner_id`
 	Name           = `name`

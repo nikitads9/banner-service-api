@@ -14,7 +14,7 @@ import (
 	"github.com/nikitads9/banner-service-api/internal/logger/sl"
 )
 
-var ErrCacheMiss = errors.New("cache miss")
+var errCacheMiss = errors.New("cache miss")
 
 type cache struct {
 	client *redis.Client
@@ -22,6 +22,7 @@ type cache struct {
 	log    *slog.Logger
 }
 
+// NewBannerCache
 func NewBannerCache(client *redis.Client, tracer trace.Tracer, log *slog.Logger) banner.Cache {
 	return &cache{
 		client: client,
@@ -30,6 +31,7 @@ func NewBannerCache(client *redis.Client, tracer trace.Tracer, log *slog.Logger)
 	}
 }
 
+// Get ...
 func (c *cache) Get(ctx context.Context, key string) (jx.Raw, error) {
 	const op = "cache.banners.Get"
 
@@ -45,7 +47,7 @@ func (c *cache) Get(ctx context.Context, key string) (jx.Raw, error) {
 	err := c.client.Get(ctx, key).Scan(&content)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			err = ErrCacheMiss
+			err = errCacheMiss
 		}
 		log.Error("get cached content failed", sl.Err(err))
 		return nil, errors.Wrapf(err, "get cached content failed with key: %s", key)
@@ -53,6 +55,8 @@ func (c *cache) Get(ctx context.Context, key string) (jx.Raw, error) {
 
 	return content, nil
 }
+
+// Set ...
 func (c *cache) Set(ctx context.Context, key string, content []byte, ttl time.Duration) error {
 	const op = "cache.banners.Set"
 

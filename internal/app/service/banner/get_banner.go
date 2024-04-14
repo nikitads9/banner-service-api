@@ -13,6 +13,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// GetBanner это получение баннера для пользователя.
 func (s *Service) GetBanner(ctx context.Context, featureID int64, tagID int64, useLastRevision bool) (jx.Raw, error) {
 	const op = "service.banners.GetBanner"
 

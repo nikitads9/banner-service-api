@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// BannerServer конфигурация сервера
 type BannerServer struct {
 	Host        string        `yaml:"host" env:"BANNERS_HOST" env-default:"0.0.0.0"`
 	Port        string        `yaml:"port" env:"BANNERS_PORT" env-default:"3000"`
@@ -17,6 +18,7 @@ type BannerServer struct {
 	IdleTimeout time.Duration `yaml:"idle_timeout" env:"BANNERS_IDLE_TIMEOUT" env-default:"30s"`
 }
 
+// Database конфигурация базы данных
 type Database struct {
 	Host                 string `yaml:"host" env:"DB_HOST" env-default:"db"`
 	Port                 string `yaml:"port" env:"DB_PORT" env-default:"5433"`
@@ -27,11 +29,13 @@ type Database struct {
 	MaxOpenedConnections int32  `yaml:"max_opened_connections" env:"DB_MAX_CONN" env-default:"10"`
 }
 
+// JWT конфигурация выдаваемых и проверяемыхтокенов
 type JWT struct {
 	Secret     string        `yaml:"secret" env:"JWT_SIGNING_KEY" env-default:"verysecretivejwt"`
 	Expiration time.Duration `yaml:"expiration" env:"JWT_EXPIRATION" env-default:"2160h"`
 }
 
+// Redis конфигурация
 type Redis struct {
 	User     string `yaml:"user" env:"REDIS_USER" env-default:"banners"`
 	Password string `yaml:"password" env:"REDIS_PASS" env-default:"banners_pass"`
@@ -39,11 +43,13 @@ type Redis struct {
 	Port     string `yaml:"port" env:"REDIS_PORT" env-default:"5679"`
 }
 
+// Tracer конфигурация коллектора телеметрии
 type Tracer struct {
 	EndpointURL  string  `yaml:"endpoint_url" env:"TRACER_URL" env-default:"http://otelcol:4318"`
 	SamplingRate float64 `yaml:"sampling_rate" env:"TRACER_SAMPLING_RATE" env-default:"1.0"`
 }
 
+// BannerConfig общий конфиг
 type BannerConfig struct {
 	Env      string       `yaml:"env" env:"ENV" env-default:"dev"`
 	Server   BannerServer `yaml:"server"`
@@ -53,6 +59,7 @@ type BannerConfig struct {
 	Tracer   Tracer       `yaml:"tracer"`
 }
 
+// ReadBannerConfigFile ...
 func ReadBannerConfigFile(path string) (*BannerConfig, error) {
 	config := &BannerConfig{}
 
@@ -64,6 +71,7 @@ func ReadBannerConfigFile(path string) (*BannerConfig, error) {
 	return config, nil
 }
 
+// ReadBannerConfigEnv ...
 func ReadBannerConfigEnv() (*BannerConfig, error) {
 	config := &BannerConfig{}
 
@@ -80,7 +88,7 @@ func (b *BannerConfig) GetServerConfig() *BannerServer {
 	return &b.Server
 }
 
-// GetJWTConfig
+// GetJWTConfig ...
 func (b *BannerConfig) GetJWTConfig() *JWT {
 	return &b.Jwt
 }
@@ -90,16 +98,17 @@ func (b *BannerConfig) GetEnv() string {
 	return b.Env
 }
 
-// GetTracerConfig
+// GetTracerConfig ...
 func (b *BannerConfig) GetTracerConfig() *Tracer {
 	return &b.Tracer
 }
 
-// GetRedisConfig
+// GetRedisConfig ...
 func (b *BannerConfig) GetRedisConfig() *Redis {
 	return &b.Redis
 }
 
+// GetDBConfig ...
 func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 	dbDsn := fmt.Sprintf("user=%s dbname=%s password=%s host=%s port=%s sslmode=%s", b.Database.User, b.Database.Name, b.Database.Password, b.Database.Host, b.Database.Port, b.Database.Ssl)
 
@@ -115,6 +124,7 @@ func (b *BannerConfig) GetDBConfig() (*pgxpool.Config, error) {
 	return poolConfig, nil
 }
 
+// GetAddress ...
 func (c *BannerConfig) GetAddress(host string, port string) string {
 	address := host + ":" + port
 	//TODO: regex check

@@ -23,11 +23,13 @@ var (
 	//errInvalidToken = errors.New("token is invalid")
 )
 
+// Security ...
 type Security struct {
 	logger     *slog.Logger
 	jwtService jwt.Service
 }
 
+// NewSecurity ...
 func NewSecurity(logger *slog.Logger, jwtService jwt.Service) Security {
 	return Security{
 		logger:     logger,
@@ -35,6 +37,7 @@ func NewSecurity(logger *slog.Logger, jwtService jwt.Service) Security {
 	}
 }
 
+// HandleAdminToken ...
 func (s Security) HandleAdminToken(ctx context.Context, operationName string, t desc.AdminToken) (context.Context, error) {
 	const op = "middleware.auth.handleAdminToken"
 
@@ -59,6 +62,7 @@ func (s Security) HandleAdminToken(ctx context.Context, operationName string, t 
 	return ctx, nil
 }
 
+// HandleUserToken ...
 func (s Security) HandleUserToken(ctx context.Context, operationName string, t desc.UserToken) (context.Context, error) {
 	const op = "middleware.auth.handleUserToken"
 
@@ -78,11 +82,11 @@ func (s Security) HandleUserToken(ctx context.Context, operationName string, t d
 		return ctx, err
 	}
 
-	//TODO: return 403 here if scope != user
 	ctx = withScope(ctx, scope)
 	return ctx, nil
 }
 
+// ScopeFromContext ...
 func ScopeFromContext(ctx context.Context) string {
 	if scope, ok := ctx.Value(keyScope).(string); ok {
 		return scope

@@ -35,7 +35,7 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
-		return 0, ErrQueryBuild
+		return 0, errQueryBuild
 	}
 
 	q := db.Query{
@@ -50,11 +50,11 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
-			return 0, ErrNoConnection
+			return 0, errNoConnection
 		}
 
 		log.Error("query execution error", sl.Err(err))
-		return 0, ErrQuery
+		return 0, errQuery
 	}
 
 	defer row.Close()
@@ -66,7 +66,7 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to scan returning id", sl.Err(err))
-		return 0, ErrPgxScan
+		return 0, errPgxScan
 	}
 
 	row.Close()
@@ -75,7 +75,7 @@ func (r *repository) CreateBanner(ctx context.Context, banner *model.Banner) (in
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
-		if strings.EqualFold(err.Error(), ErrDuplicate) {
+		if strings.EqualFold(err.Error(), errDuplicate) {
 			log.Error("this banner already exists", sl.Err(err))
 			return 0, ErrAlreadyExists
 		}

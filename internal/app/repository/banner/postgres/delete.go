@@ -33,7 +33,7 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
-		return ErrQueryBuild
+		return errQueryBuild
 	}
 
 	q := db.Query{
@@ -48,16 +48,16 @@ func (r *repository) DeleteBanner(ctx context.Context, bannerID int64) error {
 
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
-			return ErrNoConnection
+			return errNoConnection
 		}
 		log.Error("query execution error", sl.Err(err))
-		return ErrQuery
+		return errQuery
 	}
 
 	if result.RowsAffected() == 0 {
-		span.RecordError(ErrNoRowsAffected)
-		span.SetStatus(codes.Error, ErrNoRowsAffected.Error())
-		log.Error("unsuccessful delete", sl.Err(ErrNoRowsAffected))
+		span.RecordError(errNoRowsAffected)
+		span.SetStatus(codes.Error, errNoRowsAffected.Error())
+		log.Error("unsuccessful delete", sl.Err(errNoRowsAffected))
 		return ErrNotFound
 	}
 

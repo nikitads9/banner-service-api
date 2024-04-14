@@ -38,7 +38,7 @@ func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
-		return nil, ErrQueryBuild
+		return nil, errQueryBuild
 	}
 
 	q := db.Query{
@@ -55,14 +55,14 @@ func (r *repository) GetBanner(ctx context.Context, featureID int64, tagID int64
 
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
-			return nil, ErrNoConnection
+			return nil, errNoConnection
 		}
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error("banner with these tag and feature not found", sl.Err(err))
 			return nil, ErrNotFound
 		}
 		log.Error("query execution error", err)
-		return nil, ErrQuery
+		return nil, errQuery
 	}
 
 	return res, nil

@@ -6,8 +6,10 @@ import (
 	"net/url"
 )
 
+// Middleware ...
 type Middleware func(next http.Handler) http.Handler
 
+// Wrap
 func Wrap(h http.Handler, middlewares ...Middleware) http.Handler {
 	switch len(middlewares) {
 	case 0:
@@ -22,15 +24,17 @@ func Wrap(h http.Handler, middlewares ...Middleware) http.Handler {
 	}
 }
 
-func LogRequests(find RouteFinder, logger *slog.Logger) Middleware {
+// LogRequests ...
+func LogRequests(_ RouteFinder, logger *slog.Logger) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			//var opName, opID string
+			/* 			var opName, opID string
 
-			/* 			if route, ok := find(r.Method, r.URL); ok {
-				opName = route.Name()
-				opID = route.OperationID()
-			} */
+			   			if route, ok := find(r.Method, r.URL); ok {
+			   				opName = route.Name()
+			   				opID = route.OperationID()
+			   			}
+			*/
 
 			log := logger.With(
 				slog.String("http_method", r.Method),
