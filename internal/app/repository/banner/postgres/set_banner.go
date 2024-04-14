@@ -26,7 +26,7 @@ func (r *repository) SetBanner(ctx context.Context, mod *model.SetBannerInfo) er
 	ctx, span := r.tracer.Start(ctx, op)
 	defer span.End()
 
-	update := sq.Update(t.BannerTable).
+	builder := sq.Update(t.BannerTable).
 		Set(t.UpdatedAt, time.Now()).
 		Where(sq.And{
 			sq.Eq{t.ID: mod.BannerID},
@@ -34,19 +34,19 @@ func (r *repository) SetBanner(ctx context.Context, mod *model.SetBannerInfo) er
 		PlaceholderFormat(sq.Dollar)
 
 	if mod.Content.Valid {
-		update = update.Set(t.Content, mod.Content.JxRaw)
+		builder = builder.Set(t.Content, mod.Content.JxRaw)
 	}
 
 	if mod.IsActive.Valid {
-		update = update.Set(t.IsActive, mod.IsActive.Bool)
+		builder = builder.Set(t.IsActive, mod.IsActive.Bool)
 	}
 
-	query, args, err := update.ToSql()
+	query, args, err := builder.ToSql()
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 		log.Error("failed to build a query", sl.Err(err))
-		return ErrQueryBuild
+		return errQueryBuild
 	}
 
 	q := db.Query{
@@ -76,19 +76,19 @@ func (r *repository) SetBannerInfo(ctx context.Context, mod *model.SetBannerInfo
 
 	switch {
 	case mod.FeatureID.Valid && mod.TagIDs == nil:
-		update := sq.Update(t.BannerTagTable).
+		builder := sq.Update(t.BannerTagTable).
 			Set(t.FeatureID, mod.FeatureID).
 			Where(sq.And{
 				sq.Eq{t.ID: mod.BannerID},
 			}).
 			PlaceholderFormat(sq.Dollar)
 
-		query, args, err := update.ToSql()
+		query, args, err := builder.ToSql()
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 			log.Error("failed to build a query", sl.Err(err))
-			return ErrQueryBuild
+			return errQueryBuild
 		}
 
 		q := db.Query{
@@ -106,18 +106,18 @@ func (r *repository) SetBannerInfo(ctx context.Context, mod *model.SetBannerInfo
 		return nil
 
 	case mod.TagIDs != nil:
-		delete := sq.Delete(t.BannerTagTable).Where(sq.And{
+		builder := sq.Delete(t.BannerTagTable).Where(sq.And{
 			sq.Eq{t.BannerID: mod.BannerID},
 		}).
 			Suffix("returning " + t.FeatureID).
 			PlaceholderFormat(sq.Dollar)
 
-		query, args, err := delete.ToSql()
+		query, args, err := builder.ToSql()
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 			log.Error("failed to build a query", sl.Err(err))
-			return ErrQueryBuild
+			return errQueryBuild
 		}
 
 		q := db.Query{
@@ -131,10 +131,10 @@ func (r *repository) SetBannerInfo(ctx context.Context, mod *model.SetBannerInfo
 			span.SetStatus(codes.Error, err.Error())
 			if errors.As(err, pgNoConnection) {
 				log.Error("no connection to database host", sl.Err(err))
-				return ErrNoConnection
+				return errNoConnection
 			}
 			log.Error("query execution error", sl.Err(err))
-			return ErrQuery
+			return errQuery
 		}
 
 		defer row.Close()
@@ -147,7 +147,7 @@ func (r *repository) SetBannerInfo(ctx context.Context, mod *model.SetBannerInfo
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 			log.Error("failed to scan returning id", sl.Err(err))
-			return ErrPgxScan
+			return errPgxScan
 		}
 
 		if mod.FeatureID.Valid {
@@ -159,7 +159,7 @@ func (r *repository) SetBannerInfo(ctx context.Context, mod *model.SetBannerInfo
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
-			if strings.EqualFold(err.Error(), ErrDuplicate) {
+			if strings.EqualFold(err.Error(), errDuplicate) {
 				log.Error("this banner already exists", sl.Err(err))
 				return ErrAlreadyExists
 			}
@@ -182,14 +182,14 @@ func (r *repository) errorHandler(result pgconn.CommandTag, err error) error {
 	if err != nil {
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
-			return ErrNoConnection
+			return errNoConnection
 		}
 		log.Error("query execution error", sl.Err(err))
-		return ErrQuery
+		return errQuery
 	}
 
 	if result.RowsAffected() == 0 {
-		log.Error("unsuccessful update", sl.Err(ErrNoRowsAffected))
+		log.Error("unsuccessful update", sl.Err(errNoRowsAffected))
 		return ErrNotFound
 	}
 

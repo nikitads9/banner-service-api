@@ -7,6 +7,7 @@ import (
 	"github.com/go-faster/jx"
 )
 
+// Banner model ...
 type Banner struct {
 	FeatureID int64
 	TagIDs    []int64
@@ -14,6 +15,7 @@ type Banner struct {
 	IsActive  bool
 }
 
+// BannerInfo model ...
 type BannerInfo struct {
 	BannerID  int64        `db:"banner_id"`
 	FeatureID int64        `db:"feature_id"`
@@ -24,6 +26,7 @@ type BannerInfo struct {
 	CreatedAt time.Time    `db:"created_at"`
 }
 
+// SetBannerInfo model ...
 type SetBannerInfo struct {
 	BannerID  int64
 	FeatureID sql.NullInt64
@@ -32,6 +35,7 @@ type SetBannerInfo struct {
 	IsActive  sql.NullBool
 }
 
+// GetBannersParams model ...
 type GetBannersParams struct {
 	FeatureID sql.NullInt64
 	TagID     sql.NullInt64
@@ -39,6 +43,7 @@ type GetBannersParams struct {
 	Offset    int64
 }
 
+// NullJxRaw model ...
 type NullJxRaw struct {
 	JxRaw jx.Raw
 	Valid bool

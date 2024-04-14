@@ -1,7 +1,6 @@
 package banner
 
 import (
-	"errors"
 	"log/slog"
 
 	"github.com/nikitads9/banner-service-api/internal/app/repository/banner"
@@ -9,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// Service ...
 type Service struct {
 	postgresRepository banner.Repository
 	bannerCache        banner.Cache
@@ -17,10 +17,7 @@ type Service struct {
 	txManager          db.TxManager
 }
 
-var (
-	ErrNoConnection = errors.New("can't begin transaction, no connection to database")
-)
-
+// NewBannerService ...
 func NewBannerService(bannerRepository banner.Repository, bannerCache banner.Cache, tracer trace.Tracer, log *slog.Logger, txManager db.TxManager) *Service {
 	return &Service{
 		postgresRepository: bannerRepository,
@@ -31,6 +28,7 @@ func NewBannerService(bannerRepository banner.Repository, bannerCache banner.Cac
 	}
 }
 
+// NewMockBannerService ...
 func NewMockBannerService(deps ...interface{}) *Service {
 	is := Service{}
 	for _, val := range deps {

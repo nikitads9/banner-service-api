@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
+// SetBanner это обновление содержимого баннера.
 func (s *Service) SetBanner(ctx context.Context, mod *model.SetBannerInfo) error {
 	const op = "service.banners.SetBanner"
 

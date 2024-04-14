@@ -24,7 +24,7 @@ func (i *Implementation) GetBanners(ctx context.Context, params desc.GetBannersP
 	defer span.End()
 
 	scope := auth.ScopeFromContext(ctx)
-	if scope != "admin" {
+	if scope != admin {
 		span.AddEvent("invalid access token scope")
 		return &desc.GetBannersForbidden{}, nil
 	}

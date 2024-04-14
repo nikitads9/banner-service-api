@@ -23,7 +23,7 @@ func (i *Implementation) DeleteBanner(ctx context.Context, params desc.DeleteBan
 	defer span.End()
 
 	scope := auth.ScopeFromContext(ctx)
-	if scope != "admin" {
+	if scope != admin {
 		span.AddEvent("invalid access token scope")
 		return &desc.DeleteBannerForbidden{}, nil
 	}

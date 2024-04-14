@@ -6,6 +6,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+const (
+	admin = "admin"
+	user  = "user"
+)
+
 type Implementation struct {
 	bannerService *banner.Service
 	tracer        trace.Tracer

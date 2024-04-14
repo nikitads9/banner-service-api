@@ -50,14 +50,14 @@ func (r *repository) GetBanners(ctx context.Context, mod *model.GetBannersParams
 
 		if errors.As(err, pgNoConnection) {
 			log.Error("no connection to database host", sl.Err(err))
-			return nil, ErrNoConnection
+			return nil, errNoConnection
 		}
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Error("banners with these criteria not found", sl.Err(err))
 			return nil, ErrNotFound
 		}
 		log.Error("query execution error", sl.Err(err))
-		return nil, ErrQuery
+		return nil, errQuery
 	}
 
 	return banners, nil

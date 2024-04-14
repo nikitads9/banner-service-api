@@ -25,7 +25,7 @@ func (i *Implementation) CreateBanner(ctx context.Context, req *desc.CreateBanne
 	defer span.End()
 
 	scope := auth.ScopeFromContext(ctx)
-	if scope != "admin" {
+	if scope != admin {
 		span.AddEvent("invalid access token scope")
 		return &desc.CreateBannerForbidden{}, nil
 	}
