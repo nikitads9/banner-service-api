@@ -26,6 +26,14 @@ jobs:
         compose-file: "./docker-compose-test.yml"
         up-flags: "-d"
         down-flags: "-d"
+      env: 
+        DB_TEST_HOST: db-test
+        DB_PORT: 5433
+        DB_NAME: banners_db
+        DB_USER: postgres
+        DB_PASSWORD: banners_pass
+        DB_SSL: disable
+        REDIS_PORT: 6379
     - name: Integration tests
       run: go test -tags=integration ./apitest
     - name: Unit tests
