@@ -16,7 +16,7 @@ services:
       - "POSTGRES_DB=${DB_NAME}"
       - "POSTGRES_USER=${DB_USER}"
       - "POSTGRES_PASSWORD=${DB_PASSWORD}"
-      - "PGDATA=${PGDATA}"
+      - "PGDATA=/var/lib/postgresql/data/notification"
     volumes: 
       - postgres-test-volume:/var/lib/postgresql/data
     #  - ./deploy/database/init.sql:/docker-entrypoint-initdb.d/init.sql 
