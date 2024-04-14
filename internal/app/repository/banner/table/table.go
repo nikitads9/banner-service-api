@@ -1,6 +1,7 @@
 package tables
 
 var (
+	// ID ...
 	ID             = `id`
 	BannerID       = `banner_id`
 	Name           = `name`

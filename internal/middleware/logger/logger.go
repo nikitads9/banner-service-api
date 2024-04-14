@@ -9,7 +9,7 @@ import (
 // Middleware ...
 type Middleware func(next http.Handler) http.Handler
 
-// Wrap
+// Wrap ...
 func Wrap(h http.Handler, middlewares ...Middleware) http.Handler {
 	switch len(middlewares) {
 	case 0:

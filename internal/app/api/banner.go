@@ -11,12 +11,14 @@ const (
 	user  = "user"
 )
 
+// Implementation ...
 type Implementation struct {
 	bannerService *banner.Service
 	tracer        trace.Tracer
 	desc.UnimplementedHandler
 }
 
+// NewImplementation ...
 func NewImplementation(bannerService *banner.Service, tracer trace.Tracer) *Implementation {
 	return &Implementation{
 		bannerService,
