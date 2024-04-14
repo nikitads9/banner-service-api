@@ -53,8 +53,8 @@ type Invoker interface {
 	// Получение данных о баннерах для админов c фильтрацией
 	// по фиче и/или тегу и возможностью ограничить
 	// количество баннеров.  По умолчанию количество
-	// возвращаемых баннеров равняется 1000. Доступно только
-	// админам.
+	// возвращаемых баннеров ограничено 1000, сдвиг по
+	// умолчанию равен 0. Доступно только админам.
 	//
 	// GET /banner
 	GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error)
@@ -182,14 +182,14 @@ func (c *Client) sendCreateBanner(ctx context.Context, request *CreateBannerRequ
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			stage = "Security:AdminToken"
-			switch err := c.securityAdminToken(ctx, "CreateBanner", r); {
+			stage = "Security:Bearer"
+			switch err := c.securityBearer(ctx, "CreateBanner", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
 				// Skip this security.
 			default:
-				return res, errors.Wrap(err, "security \"AdminToken\"")
+				return res, errors.Wrap(err, "security \"Bearer\"")
 			}
 		}
 
@@ -306,14 +306,14 @@ func (c *Client) sendDeleteBanner(ctx context.Context, params DeleteBannerParams
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			stage = "Security:AdminToken"
-			switch err := c.securityAdminToken(ctx, "DeleteBanner", r); {
+			stage = "Security:Bearer"
+			switch err := c.securityBearer(ctx, "DeleteBanner", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
 				// Skip this security.
 			default:
-				return res, errors.Wrap(err, "security \"AdminToken\"")
+				return res, errors.Wrap(err, "security \"Bearer\"")
 			}
 		}
 
@@ -464,14 +464,14 @@ func (c *Client) sendGetBanner(ctx context.Context, params GetBannerParams) (res
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			stage = "Security:UserToken"
-			switch err := c.securityUserToken(ctx, "GetBanner", r); {
+			stage = "Security:Bearer"
+			switch err := c.securityBearer(ctx, "GetBanner", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
 				// Skip this security.
 			default:
-				return res, errors.Wrap(err, "security \"UserToken\"")
+				return res, errors.Wrap(err, "security \"Bearer\"")
 			}
 		}
 
@@ -514,8 +514,8 @@ func (c *Client) sendGetBanner(ctx context.Context, params GetBannerParams) (res
 // Получение данных о баннерах для админов c фильтрацией
 // по фиче и/или тегу и возможностью ограничить
 // количество баннеров.  По умолчанию количество
-// возвращаемых баннеров равняется 1000. Доступно только
-// админам.
+// возвращаемых баннеров ограничено 1000, сдвиг по
+// умолчанию равен 0. Доступно только админам.
 //
 // GET /banner
 func (c *Client) GetBanners(ctx context.Context, params GetBannersParams) (GetBannersRes, error) {
@@ -645,14 +645,14 @@ func (c *Client) sendGetBanners(ctx context.Context, params GetBannersParams) (r
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			stage = "Security:AdminToken"
-			switch err := c.securityAdminToken(ctx, "GetBanners", r); {
+			stage = "Security:Bearer"
+			switch err := c.securityBearer(ctx, "GetBanners", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
 				// Skip this security.
 			default:
-				return res, errors.Wrap(err, "security \"AdminToken\"")
+				return res, errors.Wrap(err, "security \"Bearer\"")
 			}
 		}
 
@@ -773,14 +773,14 @@ func (c *Client) sendSetBanner(ctx context.Context, request *SetBannerRequest, p
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			stage = "Security:AdminToken"
-			switch err := c.securityAdminToken(ctx, "SetBanner", r); {
+			stage = "Security:Bearer"
+			switch err := c.securityBearer(ctx, "SetBanner", r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
 				// Skip this security.
 			default:
-				return res, errors.Wrap(err, "security \"AdminToken\"")
+				return res, errors.Wrap(err, "security \"Bearer\"")
 			}
 		}
 

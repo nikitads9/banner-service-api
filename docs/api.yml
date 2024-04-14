@@ -71,7 +71,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-      - UserToken: []
+      - Bearer: []
   /banner:
     get:
       tags:
@@ -127,7 +127,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-      - AdminToken: []
+      - Bearer: []
     post:
       tags:
         - admin-banners
@@ -164,7 +164,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-      - AdminToken: []
+      - Bearer: []
   /banner/{id}:
     patch:
       tags:
@@ -208,7 +208,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-      - AdminToken: []
+      - Bearer: []
     delete:
       tags:
         - admin-banners
@@ -245,7 +245,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-      - AdminToken: []
+      - Bearer: []
 components:  
   schemas:
     Error:
@@ -362,14 +362,9 @@ components:
                 type: boolean
                 description: Флаг активности баннера
   securitySchemes:
-    UserToken:
+    Bearer:
       type: apiKey
       in: header
       name: Token
-      description: Токен пользователя с префиксом `UserToken`, пр. "UserToken MYTOKEN".
-    AdminToken:
-      type: apiKey
-      in: header
-      name: Token
-      description: Токен админа с префиксом `AdminToken`, пр. "AdminToken MYTOKEN".
+      description: Токен админа с префиксом `Bearer`, пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
     

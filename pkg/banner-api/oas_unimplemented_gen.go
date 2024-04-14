@@ -51,8 +51,8 @@ func (UnimplementedHandler) GetBanner(ctx context.Context, params GetBannerParam
 // Получение данных о баннерах для админов c фильтрацией
 // по фиче и/или тегу и возможностью ограничить
 // количество баннеров.  По умолчанию количество
-// возвращаемых баннеров равняется 1000. Доступно только
-// админам.
+// возвращаемых баннеров ограничено 1000, сдвиг по
+// умолчанию равен 0. Доступно только админам.
 //
 // GET /banner
 func (UnimplementedHandler) GetBanners(ctx context.Context, params GetBannersParams) (r GetBannersRes, _ error) {

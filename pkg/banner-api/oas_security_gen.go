@@ -14,12 +14,12 @@ import (
 
 // SecurityHandler is handler for security parameters.
 type SecurityHandler interface {
-	// HandleAdminToken handles AdminToken security.
-	// Токен админа с префиксом `AdminToken`, пр. "AdminToken MYTOKEN".
-	HandleAdminToken(ctx context.Context, operationName string, t AdminToken) (context.Context, error)
-	// HandleUserToken handles UserToken security.
-	// Токен пользователя с префиксом `UserToken`, пр. "UserToken MYTOKEN".
-	HandleUserToken(ctx context.Context, operationName string, t UserToken) (context.Context, error)
+	// HandleBearer handles Bearer security.
+	// Токен админа с префиксом `Bearer`, пр. "Bearer
+	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.
+	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+	// eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
+	HandleBearer(ctx context.Context, operationName string, t Bearer) (context.Context, error)
 }
 
 func findAuthorization(h http.Header, prefix string) (string, bool) {
@@ -37,31 +37,15 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
-func (s *Server) securityAdminToken(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
-	var t AdminToken
+func (s *Server) securityBearer(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
+	var t Bearer
 	const parameterName = "Token"
 	value := req.Header.Get(parameterName)
 	if value == "" {
 		return ctx, false, nil
 	}
 	t.APIKey = value
-	rctx, err := s.sec.HandleAdminToken(ctx, operationName, t)
-	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
-		return nil, false, nil
-	} else if err != nil {
-		return nil, false, err
-	}
-	return rctx, true, err
-}
-func (s *Server) securityUserToken(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
-	var t UserToken
-	const parameterName = "Token"
-	value := req.Header.Get(parameterName)
-	if value == "" {
-		return ctx, false, nil
-	}
-	t.APIKey = value
-	rctx, err := s.sec.HandleUserToken(ctx, operationName, t)
+	rctx, err := s.sec.HandleBearer(ctx, operationName, t)
 	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
 		return nil, false, nil
 	} else if err != nil {
@@ -72,26 +56,18 @@ func (s *Server) securityUserToken(ctx context.Context, operationName string, re
 
 // SecuritySource is provider of security values (tokens, passwords, etc.).
 type SecuritySource interface {
-	// AdminToken provides AdminToken security value.
-	// Токен админа с префиксом `AdminToken`, пр. "AdminToken MYTOKEN".
-	AdminToken(ctx context.Context, operationName string) (AdminToken, error)
-	// UserToken provides UserToken security value.
-	// Токен пользователя с префиксом `UserToken`, пр. "UserToken MYTOKEN".
-	UserToken(ctx context.Context, operationName string) (UserToken, error)
+	// Bearer provides Bearer security value.
+	// Токен админа с префиксом `Bearer`, пр. "Bearer
+	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.
+	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+	// eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
+	Bearer(ctx context.Context, operationName string) (Bearer, error)
 }
 
-func (s *Client) securityAdminToken(ctx context.Context, operationName string, req *http.Request) error {
-	t, err := s.sec.AdminToken(ctx, operationName)
+func (s *Client) securityBearer(ctx context.Context, operationName string, req *http.Request) error {
+	t, err := s.sec.Bearer(ctx, operationName)
 	if err != nil {
-		return errors.Wrap(err, "security source \"AdminToken\"")
-	}
-	req.Header.Set("Token", t.APIKey)
-	return nil
-}
-func (s *Client) securityUserToken(ctx context.Context, operationName string, req *http.Request) error {
-	t, err := s.sec.UserToken(ctx, operationName)
-	if err != nil {
-		return errors.Wrap(err, "security source \"UserToken\"")
+		return errors.Wrap(err, "security source \"Bearer\"")
 	}
 	req.Header.Set("Token", t.APIKey)
 	return nil
