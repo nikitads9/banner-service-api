@@ -366,5 +366,7 @@ components:
       type: apiKey
       in: header
       name: Token
-      description: Токен админа с префиксом `Bearer`, пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
+      description: "Токен апрефиксом `Bearer`,\
+      \ пр. admin `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g` и\
+      \ пр. user `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI`"
     
