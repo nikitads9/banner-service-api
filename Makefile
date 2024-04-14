@@ -81,9 +81,6 @@ integration-tests:
 down-test-environment:
 	docker compose -f ./docker-compose-test.yml down
 
-.PHONY: actions-integration-tests
-actions-integration-tests: docker-compose-test integration-tests down-test-environment
-
 .PHONY: coverage
 run-coverage:
 	go test -covermode=atomic -coverprofile=cover ./...
