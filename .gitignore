@@ -18,10 +18,13 @@
 # vendor/
 # IDE directories
 .vscode/
+# Generated folders
+.sequence
 # Binaries directories
 bin/
 # Environment files
 *.env
+
 
 # Go workspace file
 go.work

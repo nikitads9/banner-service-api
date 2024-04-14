@@ -1,0 +1,18 @@
+env: "dev"
+
+database:
+  database: "banners_db"
+  host: "localhost"
+  port: "5433"
+  user: "postgres"
+  password: "banners_pass"
+  ssl: "disable"
+  max_opened_connections: 10
+
+jwt:
+  secret: "verysecretivejwt"
+  expiration: 2160h
+
+redis:
+  host: "localhost"
+  port: "6379"

@@ -1,7 +1,7 @@
 package tables
 
+//nolint:all
 var (
-	// ID ...
 	ID             = `id`
 	BannerID       = `banner_id`
 	Name           = `name`
