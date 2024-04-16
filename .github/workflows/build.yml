@@ -2,7 +2,7 @@ name: build and test
 
 on:
   push:
-    branches: [ main]
+    branches: [ main, dev]
   pull_request:
     branches: [ main ]
 
@@ -43,7 +43,6 @@ jobs:
       with:
         fail_ci_if_error: true 
         files: ./coverage.out
-        flags: unittests 
         name: codecov-umbrella 
         token: ${{ secrets.CODECOV_TOKEN }} 
         verbose: true 

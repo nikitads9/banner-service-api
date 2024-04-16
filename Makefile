@@ -80,7 +80,7 @@ down-test-environment:
 	docker compose -f ./docker-compose-test.yml down
 
 .PHONY: coverage
-run-coverage:
+coverage:
 	go test -covermode=atomic -coverprofile=cover ./...
 	cat cover | fgrep -v "mock" | fgrep -v "docs" | fgrep -v "config" > cover2
 	go tool cover -func=cover2
