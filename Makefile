@@ -81,10 +81,4 @@ down-test-environment:
 
 .PHONY: coverage
 coverage:
-	go test -covermode=atomic -coverprofile=cover ./...
-	cat cover | fgrep -v "mock" | fgrep -v "docs" | fgrep -v "config" > cover2
-	go tool cover -func=cover2
-
-PHONY: test-coverage
-test-coverage:
-	go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out
+	go test ./... -coverprofile="coverage.out" -covermode=atomic && go tool cover -html=coverage.out
