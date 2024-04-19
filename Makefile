@@ -73,7 +73,7 @@ docker-compose-test:
 
 .PHONY: integration-tests
 integration-tests:
-	go test -tags=integration ./apitest
+	go test ./... --tags=integration -tags=integration
 
 .PHONY: down-test-environment
 down-test-environment:
@@ -81,4 +81,4 @@ down-test-environment:
 
 .PHONY: coverage
 coverage:
-	go test ./... -coverprofile="coverage.out" -covermode=atomic && go tool cover -html=coverage.out
+	go test ./... --tags=integration  -coverprofile="coverage.out" -covermode=atomic && go tool cover -html=coverage.out
