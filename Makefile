@@ -87,9 +87,9 @@ down-test-environment:
 coverage: unit-tests integration-tests cover
 unit-tests:
 	export PWD=$(pwd)
-	go test -cover ./... -tags=unit -args -test.gocoverdir="${PWD}/coverage/unit"
+	go test -cover ./... -tags=unit -args -test.gocoverdir="${PWD}/coverage/unit/"
 integration-tests:
-	go test -cover ./... -tags=integration -args -test.gocoverdir="${PWD}/coverage/integration"
+	go test -cover ./... -tags=integration -args -test.gocoverdir="${PWD}/coverage/integration/"
 cover:
 	go tool covdata percent -i=./coverage/unit,./coverage/integration
 	go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/profile
