@@ -39,12 +39,14 @@ jobs:
     - name: Integration tests
       run: go test -v -race -covermode=atomic -tags=integration -cover ./... -args -test.gocoverdir="${{ github.workspace }}/coverage/integration/"
     - name: Compute coverage
-      run: go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/profile && rm ./coverage/unit/* && rm ./coverage/integration/*
+      run: go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/coverage.out.tmp && rm ./coverage/unit/* && rm ./coverage/integration/*
+    - name: Cut out generated files coverage
+      run: cat coverage/coverage.out.tmp | grep -v --line-buffered "_gen.go" > coverage/coverage.out && rm ./coverage/coverage.out.tmp
     - name: Test coverage
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true 
-        files: ./coverage/profile
+        files: ./coverage/coverage.out
         name: codecov-umbrella 
         token: ${{ secrets.CODECOV_TOKEN }} 
         verbose: true 
