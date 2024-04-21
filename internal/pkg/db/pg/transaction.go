@@ -5,6 +5,7 @@ import (
 
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/nikitads9/banner-service-api/internal/pkg/db"
+	mocks "github.com/nikitads9/banner-service-api/internal/pkg/db/mocks_db"
 	"github.com/pkg/errors"
 )
 
@@ -13,6 +14,12 @@ type manager struct {
 }
 
 func NewTransactionManager(db db.Transactor) db.TxManager {
+	return &manager{
+		db: db,
+	}
+}
+
+func NewMockTransactionManager(db *mocks.MockDB) *manager {
 	return &manager{
 		db: db,
 	}

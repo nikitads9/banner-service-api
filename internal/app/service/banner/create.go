@@ -21,9 +21,9 @@ func (s *Service) CreateBanner(ctx context.Context, mod *model.Banner) (int64, e
 	defer span.End()
 
 	var id int64
-	var errTx error
 
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		var errTx error
 		id, errTx = s.postgresRepository.CreateBanner(ctx, mod)
 		if errTx != nil {
 			span.RecordError(errTx)

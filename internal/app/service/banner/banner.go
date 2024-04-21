@@ -35,6 +35,14 @@ func NewMockBannerService(deps ...interface{}) *Service {
 		switch s := val.(type) {
 		case banner.Repository:
 			is.postgresRepository = s
+		case banner.Cache:
+			is.bannerCache = s
+		case trace.Tracer:
+			is.tracer = s
+		case *slog.Logger:
+			is.log = s
+		case db.TxManager:
+			is.txManager = s
 		}
 	}
 	return &is

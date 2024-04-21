@@ -176,7 +176,7 @@ func (as *APISuite) SetupTest() {
 
 	t.Log("Инициализация хэндлеров")
 	// Handlers
-	as.handler = api.NewImplementation(as.bannerService, as.tracer)
+	as.handler = api.NewImplementation(as.bannerService, as.logger, as.tracer)
 
 	t.Log("Запуск сервера")
 	// routes

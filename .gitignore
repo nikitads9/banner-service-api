@@ -20,6 +20,10 @@
 .vscode/
 # Generated folders
 .sequence
+# Coverage results
+coverage/profile
+coverage/integration/*
+coverage/unit/*
 # Binaries directories
 bin/
 # Environment files

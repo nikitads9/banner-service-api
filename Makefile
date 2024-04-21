@@ -71,14 +71,28 @@ run-test-environment: env docker-compose-test
 docker-compose-test:	
 	docker compose -f ./docker-compose-test.yml up -d
 
-.PHONY: integration-tests
-integration-tests:
-	go test ./... --tags=integration -tags=integration
+.PHONY: test-unit
+test-unit:
+	go test ./... --tags=unit
+
+.PHONY: test-integration
+test-integration:
+	go test ./... --tags=integration
 
 .PHONY: down-test-environment
 down-test-environment:
 	docker compose -f ./docker-compose-test.yml down
 
 .PHONY: coverage
-coverage:
-	go test ./... --tags=integration  -coverprofile="coverage.out" -covermode=atomic && go tool cover -html=coverage.out
+coverage: unit-tests integration-tests cover
+unit-tests:
+	export PWD=$(pwd)
+	go test -cover ./... -tags=unit -args -test.gocoverdir="${PWD}/coverage/unit"
+integration-tests:
+	go test -cover ./... -tags=integration -args -test.gocoverdir="${PWD}/coverage/integration"
+cover:
+	go tool covdata percent -i=./coverage/unit,./coverage/integration
+	go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/profile
+	go tool cover -func=coverage/profile
+	go tool cover -html=coverage/profile
+	rm ./coverage/unit/* && rm ./coverage/integration/*

@@ -41,7 +41,7 @@ func NewMockTracer(ctx context.Context, svcName string) (trace.Tracer, error) {
 
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.01)),
-		sdktrace.WithBatcher(mockTraceExporter),
+		sdktrace.WithSyncer(mockTraceExporter),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String(svcName),

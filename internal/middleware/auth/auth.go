@@ -1,7 +1,6 @@
 package auth
 
 import (
-	//"github.com/nikitads9/banner-service-api/internal/app/api"
 	"context"
 	"errors"
 	"log/slog"
@@ -12,11 +11,7 @@ import (
 	desc "github.com/nikitads9/banner-service-api/pkg/banner-api"
 )
 
-type scope string
-
-const (
-	keyScope scope = ""
-)
+type KeyScope struct{}
 
 var (
 	errMissingToken = errors.New("missing bearer token")
@@ -64,7 +59,7 @@ func (s Security) HandleBearer(ctx context.Context, _ string, t desc.Bearer) (co
 
 // ScopeFromContext ...
 func ScopeFromContext(ctx context.Context) string {
-	if scope, ok := ctx.Value(keyScope).(string); ok {
+	if scope, ok := ctx.Value(KeyScope{}).(string); ok {
 		return scope
 	}
 
@@ -72,5 +67,5 @@ func ScopeFromContext(ctx context.Context) string {
 }
 
 func withScope(ctx context.Context, scope string) context.Context {
-	return context.WithValue(ctx, keyScope, scope)
+	return context.WithValue(ctx, KeyScope{}, scope)
 }

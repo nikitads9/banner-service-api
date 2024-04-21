@@ -35,14 +35,16 @@ jobs:
     - name: Sleep for 5 seconds
       run: sleep 5s
     - name: Unit tests
-      run: go test -v -race -coverprofile="coverage.out" -covermode=atomic --tags=unit ./...
+      run: go test -v -race -covermode=atomic -tags=unit -cover -args -test.gocoverdir="${{ github.workspace }}/coverage/unit" ./...
     - name: Integration tests
-      run: go test -v -coverprofile="coverage.out" -covermode=atomic --tags=integration ./...
+      run: go test -v -race -covermode=atomic -tags=integration -cover -args -test.gocoverdir="${{ github.workspace }}/coverage/integration" ./...
+    - name: Compute coverage
+      run: go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/profile && rm ./coverage/unit/* && rm ./coverage/integration/*
     - name: Test coverage
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true 
-        files: ./coverage.out
+        files: ./coverage/profile
         name: codecov-umbrella 
         token: ${{ secrets.CODECOV_TOKEN }} 
         verbose: true 
