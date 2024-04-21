@@ -63,8 +63,8 @@ build-client:
 migrate:
 	docker start banner-migrator
 
-.PHONY: run-integration-tests
-run-integration-tests: run-test-environment integration-tests down-test-environment
+.PHONY: run-tests
+run-tests: test-unit run-test-environment test-integration coverage down-test-environment
 
 .PHONY: run-test-environment 
 run-test-environment: env docker-compose-test
