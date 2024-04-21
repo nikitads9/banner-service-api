@@ -23,7 +23,9 @@
 # Coverage results
 coverage/profile
 coverage/integration/*
+!coverage/integration/.gitkeep
 coverage/unit/*
+!coverage/unit/.gitkeep
 # Binaries directories
 bin/
 # Environment files
