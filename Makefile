@@ -92,7 +92,7 @@ integration-tests:
 	go test -cover ./... -tags=integration -args -test.gocoverdir="${PWD}/coverage/integration/"
 cover:
 	go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/coverage.out.tmp 
-	cat coverage/coverage.out.tmp | grep -v --line-buffered "_gen.go" > coverage/coverage.out && rm ./coverage/coverage.out.tmp
+	cat coverage/coverage.out.tmp | grep -v -E --line-buffered '^.*_gen.go.*|^.*_mock.go.*' > coverage/coverage.out && rm ./coverage/coverage.out.tmp
 	go tool cover -func=coverage/coverage.out
 	go tool cover -html=coverage/coverage.out
 	rm ./coverage/unit/* && rm ./coverage/integration/*

@@ -1,6 +1,6 @@
 package banner
 
-//go:generate mockgen --build_flags=--mod=mod -destination=./mocks/banner_service_repository.go -package=mocks . Repository
+//go:generate mockgen --build_flags=--mod=mod -destination=./mocks/banner_repository_mock.go -package=mocks . Repository
 
 import (
 	"context"

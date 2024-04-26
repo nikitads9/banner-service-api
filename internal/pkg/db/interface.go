@@ -1,7 +1,7 @@
 package db
 
-//go:generate mockgen --build_flags=--mod=mod -destination=mocks_db/mock_db.go -package=mocks . DB
-//go:generate mockgen --build_flags=--mod=mod -destination=mocks_tx/mock_tx.go -package=mocks github.com/jackc/pgx/v5 Tx
+//go:generate mockgen --build_flags=--mod=mod -destination=mocks_db/db_mock.go -package=mocks . DB
+//go:generate mockgen --build_flags=--mod=mod -destination=mocks_tx/tx_mock.go -package=mocks github.com/jackc/pgx/v5 Tx
 
 import (
 	"context"

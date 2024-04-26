@@ -102,6 +102,8 @@ type APISuite struct {
 	suite.Suite
 	handler          *api.Implementation
 	server           *desc.Server
+	noDbServer       *desc.Server
+	noCacheServer    *desc.Server
 	pgClient         pg.Client
 	txManager        db.TxManager
 	rdsClient        *redis.Client
@@ -125,7 +127,7 @@ func (as *APISuite) SetupTest() {
 
 	ctx := context.Background()
 
-	as.tracer, err = observability.NewMockTracer(ctx, "banners-api-test")
+	as.tracer, err = observability.NewLocalTracer(ctx, "banners-api-test")
 	if err != nil {
 		t.Fatalf("[App] Init - could not create mock tracer. Error: %s", err)
 	}
@@ -197,6 +199,51 @@ func (as *APISuite) SetupTest() {
 		t.Fatalf("[App] Init - cannot generate admin token. Error: %s", err)
 	}
 	as.adminToken = "Bearer " + token
+
+	noConnCfx := cfx.Copy()
+	noConnCfx.ConnConfig.Port = cfx.ConnConfig.Port + 1
+	noConnPgClient, err := pg.NewClient(ctx, as.logger, noConnCfx)
+	if err != nil {
+		t.Fatalf("[App] Init - cannot create connection to test no connection to database. Error: %s", err)
+	}
+
+	noConnTxManager := pg.NewTransactionManager(noConnPgClient.DB())
+
+	t.Log("Создание неправильного коннекта к Redis для сервера без исходящих соединений")
+	noConnRdsClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Host + ":" + cfg.Redis.Port + "1",
+		Password: "",
+		DB:       0,
+	})
+
+	t.Log("Инициализация хранилищ сервера без исходящих соединений")
+
+	// Repositories
+	bannerNoRepository := postgres.NewBannerRepository(noConnPgClient, as.tracer, as.logger)
+	bannerNoCache := cache.NewBannerCache(noConnRdsClient, as.tracer, as.logger)
+
+	t.Log("Инициализация сервисного слоя сервера без исходящих соединений")
+
+	// Service layer
+	bannerNoDbService := bannerService.NewBannerService(bannerNoRepository, as.bannerCache, as.tracer, as.logger, noConnTxManager)
+	bannerNoCacheService := bannerService.NewBannerService(as.bannerRepository, bannerNoCache, as.tracer, as.logger, noConnTxManager)
+
+	t.Log("Инициализация хэндлеров сервера без исходящих соединений")
+	// Handlers
+	handlerNoDb := api.NewImplementation(bannerNoDbService, as.logger, as.tracer)
+	handlerNoCache := api.NewImplementation(bannerNoCacheService, as.logger, as.tracer)
+
+	t.Log("Запуск сервера без исходящих соединений")
+	// routes
+	as.noDbServer, err = desc.NewServer(handlerNoDb, auth.NewSecurity(as.logger, as.jwtService))
+	if err != nil {
+		t.Fatalf("init router error: %s", err)
+	}
+
+	as.noCacheServer, err = desc.NewServer(handlerNoCache, auth.NewSecurity(as.logger, as.jwtService))
+	if err != nil {
+		t.Fatalf("init router error: %s", err)
+	}
 }
 
 func (as *APISuite) TearDownTest() {

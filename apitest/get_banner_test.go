@@ -255,4 +255,27 @@ func (as *APISuite) TestGetBanner() {
 			Status(http.StatusBadRequest).
 			End()
 	})
+
+	t.Run("Попытка получения баннера без соединения с БД", func(t *testing.T) {
+		apitest.New().
+			Handler(as.noDbServer).
+			Get(path).
+			Query(FeatureIDParam, "3").Query(TagIDParam, "4").
+			Header(TokenHeader, as.userToken).
+			Expect(t).
+			Status(http.StatusInternalServerError).
+			End()
+	})
+
+	t.Run("Неудачная попытка записи в кэш", func(t *testing.T) {
+		apitest.New().
+			Handler(as.noCacheServer).
+			Get(path).
+			Query(FeatureIDParam, "4").Query(TagIDParam, "1").
+			Header(TokenHeader, as.userToken).
+			Expect(t).
+			Body(string(bannerContentList[updatedContent])).
+			Status(http.StatusOK).
+			End()
+	})
 }

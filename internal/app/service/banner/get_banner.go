@@ -41,7 +41,7 @@ func (s *Service) GetBanner(ctx context.Context, featureID int64, tagID int64, u
 
 	content, err := s.postgresRepository.GetBanner(ctx, featureID, tagID)
 	if err == nil {
-		err = s.bannerCache.Set(ctx, key, content, 5*time.Minute)
+		err := s.bannerCache.Set(ctx, key, content, 5*time.Minute)
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())

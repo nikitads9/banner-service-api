@@ -35,8 +35,8 @@ func NewTracer(ctx context.Context, otlpEndpoint string, svcName string, samplin
 	return otel.Tracer(svcName), nil
 }
 
-// NewMockTracer ...
-func NewMockTracer(ctx context.Context, svcName string) (trace.Tracer, error) {
+// NewLocalTracer ...
+func NewLocalTracer(ctx context.Context, svcName string) (trace.Tracer, error) {
 	mockTraceExporter := tracetest.NewInMemoryExporter()
 
 	tp := sdktrace.NewTracerProvider(

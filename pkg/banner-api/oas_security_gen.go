@@ -15,10 +15,11 @@ import (
 // SecurityHandler is handler for security parameters.
 type SecurityHandler interface {
 	// HandleBearer handles Bearer security.
-	// Токен админа с префиксом `Bearer`, пр. "Bearer
+	// Токен с префиксом `Bearer`, пр. admin `Bearer
 	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.
-	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-	// eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
+	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g` и пр. user `Bearer
+	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.
+	// vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI`.
 	HandleBearer(ctx context.Context, operationName string, t Bearer) (context.Context, error)
 }
 
@@ -57,10 +58,11 @@ func (s *Server) securityBearer(ctx context.Context, operationName string, req *
 // SecuritySource is provider of security values (tokens, passwords, etc.).
 type SecuritySource interface {
 	// Bearer provides Bearer security value.
-	// Токен админа с префиксом `Bearer`, пр. "Bearer
+	// Токен с префиксом `Bearer`, пр. admin `Bearer
 	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoiYWRtaW4ifQ.
-	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g" и пр. "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-	// eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI.
+	// cev1h-ivEbwx3UJDYOoWIAid-gSRuPh5RObOkkuOY2g` и пр. user `Bearer
+	// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTk5ODYyMzUsInNjb3BlIjoidXNlciJ9.
+	// vmt-FrTKksPPLAnzvXzj3R7lLcVe06xAEi5s_2NLRVI`.
 	Bearer(ctx context.Context, operationName string) (Bearer, error)
 }
 

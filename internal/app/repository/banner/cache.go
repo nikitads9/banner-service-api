@@ -1,6 +1,6 @@
 package banner
 
-//go:generate mockgen --build_flags=--mod=mod -destination=./mocks/banner_service_cache.go -package=mocks . Cache
+//go:generate mockgen --build_flags=--mod=mod -destination=./mocks/banner_cache_mock.go -package=mocks . Cache
 
 import (
 	"context"
