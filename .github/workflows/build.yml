@@ -41,7 +41,7 @@ jobs:
     - name: Compute coverage
       run: go tool covdata textfmt -i=./coverage/unit,./coverage/integration -o coverage/coverage.out.tmp && rm ./coverage/unit/* && rm ./coverage/integration/*
     - name: Cut out generated files coverage
-      run: cat coverage/coverage.out.tmp | grep -v --line-buffered "_gen.go" > coverage/coverage.out && rm ./coverage/coverage.out.tmp
+      run: cat coverage/coverage.out.tmp | grep -v -E --line-buffered '^.*_gen.go.*|^.*_mock.go.*' > coverage/coverage.out && rm ./coverage/coverage.out.tmp
     - name: Test coverage
       uses: codecov/codecov-action@v4
       with:
